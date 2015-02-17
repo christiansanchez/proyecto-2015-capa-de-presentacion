@@ -30,8 +30,12 @@
 					file: 'water.png'
 				},
 				{
-					bullet: 'bullet',
+					tag: 'bullet',
 					file: 'bullet.png'
+				},
+				{
+					tag: 'island',
+					file: 'island.png'
 				}
 
 			];
