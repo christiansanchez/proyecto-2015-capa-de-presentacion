@@ -13,6 +13,8 @@
 			cursors,
 			speedBoats,
 			bullets, 
+			island,
+			islandPiece,
 
 			fireButton,
 			changeCharacterButton,
@@ -40,6 +42,13 @@
 
 				map = game.add.group();
 				map.enableBody = true;
+
+				island = game.add.group();
+				islandPiece = island.create(game.world.width / 2, game.world.height / 2, 'island');
+				game.physics.arcade.enable(islandPiece)
+				islandPiece.body.bounce.setTo(0, 0);
+				islandPiece.body.immovable = true;
+				
 			},
 
 			fire = function(game) {
@@ -144,6 +153,10 @@
 				sb.kill();
 			},
 
+			stopGoing = function(fb, i) {
+				fb.body.angularVelocity = 0;
+			},
+
 			computeDamage = function(sb) {
 				sb.damage++;
 			},
@@ -223,6 +236,7 @@
 
 			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 			    game.physics.arcade.overlap(bullets, speedBoats, fireHandler, null, this);
+			    game.physics.arcade.collide(freightBoat, islandPiece);
 
 			    /**
 			     * To turn the boat around
