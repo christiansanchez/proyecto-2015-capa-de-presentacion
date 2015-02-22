@@ -11,7 +11,8 @@
 				IMAGE: 'image'
 			},
 
-			SERVICE_URL = 'http://localhost:8080/axis2/services/WsFactibilidad/',
+			//SERVICE_URL = 'http://localhost:8080/axis2/services/WsFactibilidad/',
+			SERVICE_URL = 'http://localhost:8080/axis2/services/wservicejuego';
 			SOCKET_URL 	= 'ws://localhost:8080/examples/websocket/chat';
 			//SERVICE_URL = 'http://192.168.43.249/axis2/services/WsFactibilidad/';
 
