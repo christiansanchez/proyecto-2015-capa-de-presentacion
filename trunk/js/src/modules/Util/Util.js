@@ -2,11 +2,18 @@
 
 	window.Util = (function() {
 
-		var RESULTS_NODE = 'return';
+		var RESULTS_NODE = 'return',
+			OBJECT_SEPARATOR = ';';
+
+			parseToObject = function(data) {
+				return _.map(data.split(OBJECT_SEPARATOR), function(obj) {
+						return JSON.parse(obj);
+					});
+			};
 
 		return {
 			parseWebServiceData: function(response) {
-				return $(response).find(RESULTS_NODE).text();
+				return parseToObject($(response).find(RESULTS_NODE).text());
 			},
 
 			parseWebSocketData: function(data) {

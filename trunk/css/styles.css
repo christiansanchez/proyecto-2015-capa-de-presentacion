@@ -1,0 +1,26 @@
+.padded li {
+	padding: 5px;
+}
+
+.btn-md {
+	width: 50%;
+}
+
+.btn-lg {
+	width: 80%;
+}
+
+.form-horizontal {
+	padding: 10px;
+}
+
+/** Modal Styles */
+.simplemodal-overlay {
+	background: #d5d5d5;
+}
+
+.simplemodal-container {
+	background: #fff;
+	border-radius: 3px;
+	width: 50%;
+}
