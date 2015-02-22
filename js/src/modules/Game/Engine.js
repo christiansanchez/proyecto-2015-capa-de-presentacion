@@ -153,10 +153,6 @@
 				sb.kill();
 			},
 
-			stopGoing = function(fb, i) {
-				fb.body.angularVelocity = 0;
-			},
-
 			computeDamage = function(sb) {
 				sb.damage++;
 			},
@@ -213,18 +209,18 @@
 			     * To turn the boat around
 			     */
 			    if(cursors.left.isDown) {
-			        freightBoat.body.angularVelocity = -200;
+			        freightBoat.body.angularVelocity = -50;
 			    } else if (cursors.right.isDown) {
-			        freightBoat.body.angularVelocity = 200;
+			        freightBoat.body.angularVelocity = 50;
 			    } 
 
 			    /**
 			     * To move it back and forth
 			     */
 			    if(cursors.up.isDown) {
-			        game.physics.arcade.velocityFromAngle(freightBoat.angle, 300, freightBoat.body.velocity);
+			        game.physics.arcade.velocityFromAngle(freightBoat.angle, 50, freightBoat.body.velocity);
 			    } else if(cursors.down.isDown) {
-			    	game.physics.arcade.velocityFromAngle(freightBoat.angle, -300, freightBoat.body.velocity);
+			    	game.physics.arcade.velocityFromAngle(freightBoat.angle, -50, freightBoat.body.velocity);
 			    }
 
 			    if(fireButton.isDown) {

@@ -1,8 +1,10 @@
-(function(undefined) {
+(function(window, document, pubsub, Util, undefined) {
 
 	window.SocketManager = function() {
 
 		var ws,
+			gameStarted = false,
+
 			bindEvents = function() {
 
 				ws.onopen = function() {
@@ -14,7 +16,8 @@
 				};
 
 				ws.onmessage = function(event) {
-					ws.send(event.data);
+					var data = Util.parseWebSocketData(event.data);
+					pubsub.publish(data.evt, data.data);
 				};
 
 			};
@@ -37,9 +40,13 @@
 
 			close: function() {
 				ws.close();
+			},
+
+			startGame: function() {
+				gameStarted = true;
 			}
 		}
 
 	};
 
-})();
+})(window, document, jQuery.pubsub, window.Util);

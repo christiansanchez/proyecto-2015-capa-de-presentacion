@@ -5,7 +5,7 @@
 			var matches = {},
 
 				parse = function(data) {
-					return data
+					return data;
 				};
 
 			return {
@@ -14,7 +14,7 @@
 					/*Gateway.request({
 						method: 'getPartidas'	
 					}).then(function(data) {
-						matches = parse(data);
+						matches = parseWebServiceData(data);
 						View.bindEvents();
 					});*/
 

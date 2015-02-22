@@ -54,22 +54,20 @@
 			PLAYERS = {
 				freightBoat: {
 					qty: FREIGHT_BOATS_QTY,
-					sprite: FREIGHT_BOAT_SPRITE,
-					damageLimit: 8,
-					cannons: 8
+					sprite: FREIGHT_BOAT_SPRITE
 				},
 				speedBoat: {
 					qty: SPEEDBOATS,
-					sprite: SPEEDBOAT_SPRITE,
-					distance: SPEEDBOAT_DISTANCE,
-					damageLimit: 3
+					sprite: SPEEDBOAT_SPRITE
 				}
 			},
 
 			BULLETS = 100,
 
 			DEFAULT_VISION	= 300,
-			DEFAULT_SPEED 	= 200;
+			DEFAULT_SPEED 	= 200,
+
+			PLAYERS_LIMIT = 2;
 
 		return {
 
@@ -87,6 +85,72 @@
 
 			getBullets: function() {
 				return BULLETS;
+			},
+
+			getBoatsQty: function(type) {
+				return PLAYERS[type].qty
+			},
+
+			getSprite: function(type) {
+				return PLAYERS[type].sprite;
+			},
+
+			getPlayersLimit: function() {
+				return PLAYERS_LIMIT;
+			}
+
+		}
+
+	})();
+
+	window.Config.Boat = (function() {
+
+		var DEFAULT_TYPE = 'freightboat',
+
+			defaultConfig = {
+				speed: 20,
+				stamina: 8,
+				vision: 100, 
+				type: DEFAULT_TYPE
+			},
+
+			speedBoatsConfig = {
+				speed: defaultConfig.speed * 2,
+				stamina: 3,
+				vision: defaultConfig.vision / 2, 
+				type: 'speedboat'
+			},
+
+			physicsConfig = {
+				anchor: {
+					x: 0.5, 
+					y: 0.5
+				},
+				angle: 90,
+				body: {
+					bounce: {
+						y: 0
+					},
+					gravity: {
+						y: 0
+					},
+					colideWorldBounds: true,
+					drag: 0.2
+				}
+			};
+
+		return {
+
+			getDefaultConfig: function() {
+				return defaultConfig;
+			},
+
+			getSpeedBoatConfig: function() {
+				return speedBoatsConfig;
+			},
+
+			getPhysicsConfig: function() {
+				return physicsConfig;
 			}
 
 		}
