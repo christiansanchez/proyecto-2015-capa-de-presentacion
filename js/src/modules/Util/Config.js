@@ -62,7 +62,7 @@
 				}
 			},
 
-			BULLETS = 100,
+			BULLETS = 2000,
 
 			DEFAULT_VISION	= 300,
 			DEFAULT_SPEED 	= 200,
@@ -111,14 +111,16 @@
 				speed: 20,
 				stamina: 8,
 				vision: 100, 
-				type: DEFAULT_TYPE
+				type: DEFAULT_TYPE,
+				reach: 60
 			},
 
 			speedBoatsConfig = {
 				speed: defaultConfig.speed * 2,
 				stamina: 3,
 				vision: defaultConfig.vision / 2, 
-				type: 'speedboat'
+				type: 'speedboat', 
+				reach: defaultConfig.reach * 2
 			},
 
 			physicsConfig = {

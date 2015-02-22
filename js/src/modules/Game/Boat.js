@@ -4,7 +4,8 @@
 
 		var speed 	= options.speed || Default.speed,
 			stamina = options.stamina || Default.stamina,
-			vision	= options.vision || Default.vision, 
+			vision	= options.vision || Default.vision,
+			reach 	= options.reach || Default.reach,
 			type 	= options.type || Default.type;
 
 		return {

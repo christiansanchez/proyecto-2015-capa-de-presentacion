@@ -105,8 +105,6 @@
 			    freightBoat.body.gravity.y = 0;
 			    freightBoat.body.collideWorldBounds = true;
 			    freightBoat.body.drag.set(0.2);
-
-			    cursors = game.input.keyboard.createCursorKeys();
 			},
 
 			addSpeedBoats = function(game, speedBoats) {
@@ -178,6 +176,7 @@
 			    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.TAB]);
 			    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 			    changeCharacterButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+			    cursors = game.input.keyboard.createCursorKeys();
 			};
 
 		return {
