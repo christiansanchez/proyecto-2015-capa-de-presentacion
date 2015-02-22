@@ -7,8 +7,11 @@
 
 			bindEvents = function() {
 
-				ws.onopen = function() {
-					ws.send(event.data);
+				ws.onopen = function(event) {
+					/**
+					 * Not sure how this should be handled
+					 */
+					$.pubsub.publish(Engine.Events.NEW_PLAYER, Util.parseWebSocketData(event.data))
 				};
 
 				ws.onclose = function(event) {
@@ -27,7 +30,6 @@
 			init: function(url) {
 				try {
 					ws = new WebSocket(url);
-					console.log(ws);
 					bindEvents();
 				} catch(e) {
 					console.log('There was an error tring to open the socket: ', e);

@@ -4,7 +4,7 @@
 
 			var hasIsland = false,
 				players = Engine2.getPlayers(),
-				bulletsQty = Config.Player.getBullets(),
+				bulletsQty = window.Config.Player.getBullets(),
 
 				preload = function(game) {
 					var images 	= Assets.getImages(),
@@ -17,11 +17,7 @@
 				},
 
 				create = function(game) {
-					game.sea = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sea');
-					game.sea.fixedToCamera = true;
-
-					map = game.add.group();
-					map.enableBody = true;
+					game = Map.addBackground(game, 'sea');
 
 					/**
 					 * To randomly add an island or not
@@ -70,6 +66,18 @@
 							}
 						);
 					}
+
+					initControls(game);
+				},
+
+				update: function(game) {
+					var player = Engine.getLocalPlayer();
+
+					/**
+					 * A logic similar to the one that's used at the 
+					 * Engine.update should be used.
+					 * At the end a ws.send will be invoked (previously)
+					 */
 				};
 
 			return {
