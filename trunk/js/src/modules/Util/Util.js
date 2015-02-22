@@ -5,8 +5,12 @@
 		var RESULTS_NODE = 'return';
 
 		return {
-			parse: function(response) {
+			parseWebServiceData: function(response) {
 				return $(response).find(RESULTS_NODE).text();
+			},
+
+			parseWebSocketData: function(data) {
+				return data;
 			}
 		}
 

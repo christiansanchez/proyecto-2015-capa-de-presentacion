@@ -9,7 +9,7 @@
 		<link rel="stylesheet" type="text/css" href="css/styles.css">
 	</head>
 	<body>
-		<div class="container">
+		<div class="container hidden">
 			<div class="header">
 				<nav>
 					<ul class="nav nav-pills pull-right">
@@ -48,6 +48,7 @@
 	<script type="text/javascript" src="js/lib/underscore-min.js"></script>
 	<script type="text/javascript" src="js/lib/phaser.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery-2.1.3.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.pubsub.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.simplemodal.1.4.4.min.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/Config.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/SocketManager.js"></script>
@@ -129,7 +130,8 @@
 	<script type="text/javascript">
 		(function() {
 
-			Menu.init();
+			//Menu.init();
+			Game.init();
 
 		})();
 	</script>
