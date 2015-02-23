@@ -6,6 +6,10 @@
 
 		return {
 			
+			CREATE: 'create',
+			JOIN: 'join',
+			LOAD: 'load',
+
 			NEW_PLAYER: 'newplayer',
 			SHOT_PLAYER: 'shotplayer',
 			KILL_PLAYER: 'killplayer',
