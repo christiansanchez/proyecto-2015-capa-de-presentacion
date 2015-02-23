@@ -1,5 +1,7 @@
 (function($, window, document) {
 
+	window.Config = {};
+
 	window.Config.General = (function() {
 			/**
 			 * General App settings

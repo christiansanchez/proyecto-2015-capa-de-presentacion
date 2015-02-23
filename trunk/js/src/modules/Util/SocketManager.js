@@ -11,7 +11,7 @@
 					/**
 					 * Not sure how this should be handled
 					 */
-					$.pubsub.publish(Engine.Events.NEW_PLAYER, Util.parseWebSocketData(event.data))
+					pubsub.publish(Engine.Events.NEW_PLAYER, Util.parseWebSocketData(event.data))
 				};
 
 				ws.onclose = function(event) {
