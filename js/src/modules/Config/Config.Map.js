@@ -1,7 +1,5 @@
 (function($, window, document) {
 
-	window.Config = {};
-
 	window.Config.Map = (function() {
 			/**
 			 * Game starting settings

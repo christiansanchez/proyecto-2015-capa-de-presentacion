@@ -42,7 +42,8 @@
 			return {
 
 				bindEvents: function() {
-					actionsWrapper.on('click', '[data-action="showstep"]', showStep);
+					//actionsWrapper.on('click', '[data-action="showstep"]', showStep);
+					$('[data-action="showstep"]').on('click', showStep);
 					
 					body.on('click', '[data-action="create"]', create);
 					body.on('click', '[data-action="join"]', join);

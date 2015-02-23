@@ -9,31 +9,49 @@
 		<link rel="stylesheet" type="text/css" href="css/styles.css">
 	</head>
 	<body>
-		<div class="container hidden">
-			<div class="header">
-				<nav>
-					<ul class="nav nav-pills pull-right">
-						<li role="presentation"><a href="javascript:;">Acerca de</a></li>
-						<li role="presentation"><a href="javascript:;">Ayuda</a></li>
-					</ul>
-				</nav>
-				<h3 class="text-muted">GameSquad</h3>
-			</div>
-
-			<div class="jumbotron">
-				<h1>Menú Principal</h1>
-			</div>
-
-			<div class="row marketing">
-				<div class="col-lg-12 step step-1">
-					<div id="actions" class="btn-group-vertical col-lg-12" role="group">
-						<ul class="list-unstyled padded text-center">
-							<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="create">Nueva partida</button></li>
-							<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-type="started">Unirse a una partida en curso</button></li>
-							<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-type="saved">Cargar partida</button></li>
+		<div class="container">
+				<div class="header">
+					<nav>
+						<ul class="nav nav-pills pull-right">
+							<li role="presentation"><a href="javascript:;">Acerca de</a></li>
+							<li role="presentation"><a href="javascript:;">Ayuda</a></li>
 						</ul>
+					</nav>
+					<h3 class="text-muted">GameSquad</h3>
+				</div>
+				
+				<div id="menu-container">
+					<div class="jumbotron">
+						<h1>Menú Principal</h1>
+					</div>
+
+					<div class="row marketing">
+						<div class="col-lg-12 step step-1">
+							<div id="actions" class="btn-group-vertical col-lg-12" role="group">
+								<ul class="list-unstyled padded text-center">
+									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="create">Nueva partida</button></li>
+									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-type="started">Unirse a una partida en curso</button></li>
+									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-type="saved">Cargar partida</button></li>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>
+			
+			<div id="game-wrapper" class="hidden">
+				<div id="game-container"></div>
+				<nav class="navbar navbar-default">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3">
+							</button>
+						</div>
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-3">
+							<button type="button" class="btn btn-primary navbar-btn" data-action="showstep" data-target="save">Guardar partida</button>
+							<button type="button" class="btn btn-primary navbar-btn" data-action="showstep" data-target="abandon">Abandonar partida</button>
+						</div>
+					</div>
+				</nav>
 			</div>
 
 			<footer class="footer">
@@ -41,9 +59,6 @@
 			</footer>
 
     	</div>
-		<div class="container">
-			<div id="game-container" class="container"></div>
-		</div>
 	</body>
 	<script type="text/javascript" src="js/lib/underscore-min.js"></script>
 	<script type="text/javascript" src="js/lib/phaser.min.js"></script>
@@ -51,9 +66,9 @@
 	<script type="text/javascript" src="js/lib/jquery.pubsub.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.simplemodal.1.4.4.min.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.General.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Mapjs"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Playerjs"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Boatjs"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Map.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Player.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Boat.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/SocketManager.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/Gateway.js"></script>
 	<script type="text/javascript" src="js/src/modules/Menu/Templates.js"></script>
@@ -62,10 +77,12 @@
 	<script type="text/javascript" src="js/src/modules/Menu/Menu.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Assets.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Boat.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/FreightBoat.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/SpeedBoat.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Player.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Engine.Events.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Engine.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Game.Map.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Game.js"></script>
+	<script type="text/javascript" src="js/src/modules/Test/Test.js"></script>
 	<!-- Templates for the menu -->
 	<div id="tpl-wrapper">
 		<script id="create-tpl" type="underscore/template" data-action="create">
@@ -122,19 +139,31 @@
 								<li><button type="button" class="btn-lg btn-default">Partida 5</button></li>
 							</ul>
 						</div>
-						<button type="submit" class="btn-sm btn-success">Cargar</button>
+						<button type="submit" class="btn-sm btn-success" data-action="load">Cargar</button>
 						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
 						<input type="hidden" name="id" value="">
 					</form>
 				</div>
 			</div>
 		</script>
+		<script id="abandon-tpl" type="underscore/template" data-action="abandon">
+			<div class="col-lg-12 step step-2">
+				<h2>¿Está seguro que desea abandonar la partida?</h2>
+				<legend>En caso de confirmar, tenga en cuenta que su contrincante será el ganador de la partida.</legend>
+				<hr>
+				<form class="form-horizontal" action="javascript:;" method="post">
+					<button type="submit" class="btn-sm btn-success">Abandonar</button>
+					<button type="button" class="btn-sm btn-error" data-action="back">Continuar</button>
+					<input type="hidden" name="id" value="">
+				</form>
+			</div>
+		</script>
 	</div>
 	<script type="text/javascript">
 		(function() {
 
-			//Menu.init();
-			Game.init();
+			Menu.init();
+			//Game.init();
 
 		})();
 	</script>

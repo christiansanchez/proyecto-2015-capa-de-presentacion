@@ -28,14 +28,20 @@
 				angle: 90,
 				body: {
 					bounce: {
+						x: 0,
 						y: 0
 					},
 					gravity: {
+						x: 0,
 						y: 0
 					},
-					collideWorldBounds: true,
-					drag: 0.2
+					collideWorldBounds: true
 				}
+			},
+
+			groupConfig = {
+				enableBody: true, 
+				physicsBodyType: Phaser.Physics.ARCADE
 			};
 
 		return {
@@ -50,6 +56,10 @@
 
 			getPhysicsConfig: function() {
 				return physicsConfig;
+			},
+
+			getGroupConfig: function() {
+				return groupConfig;
 			}
 
 		}
