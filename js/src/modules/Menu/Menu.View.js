@@ -1,4 +1,4 @@
-(function($, document, window, Actions, Templates, undefined) {
+(function($, document, window, Actions, Templates, Validation, undefined) {
 
 	window.Menu.View = (function() {
 
@@ -7,6 +7,10 @@
 				actions = Actions.get(),
 				actionsWrapper = $('#actions'),
 				body = $('body'),
+
+				showErrors = function() {
+
+				},
 
 				showStep = function(e) {
 					var clicked = $(e.target),
@@ -24,7 +28,13 @@
 				},
 
 				create = function(e) {
-
+					if(Validation.validate($.serializeForm($(e.target)), Engine.Events.CREATE)) {
+						$.pubsub.publish(Engine.Events.NEW_PLAYER, {
+							type: 'freightboat'
+						});
+					} else {
+						showErrors();
+					}
 				},
 
 				join = function(e) {
@@ -42,7 +52,6 @@
 			return {
 
 				bindEvents: function() {
-					//actionsWrapper.on('click', '[data-action="showstep"]', showStep);
 					$('[data-action="showstep"]').on('click', showStep);
 					
 					body.on('click', '[data-action="create"]', create);
@@ -54,4 +63,4 @@
 
 		})();
 
-})(jQuery, document, window, Menu.Actions, Templates);
+})(jQuery, document, window, Menu.Actions, Templates, Menu.Validation);
