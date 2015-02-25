@@ -99,7 +99,7 @@
 				freightBoats.name = 'freightboats';
 
 				freightBoat = freightBoats.create(50, 0, players.freightBoat.sprite)
-				freightBoat.anchor.setTo(0.5, 0.5)
+				freightBoat.anchor.setTo(0.5, 0.5);
 				freightBoat.angle = game.rnd.angle();
 				freightBoat.angle = 90;
 
@@ -115,23 +115,25 @@
 			},
 
 			addSpeedBoats = function(game, speedBoats) {
-				var separationCoef = players.speedBoat.distance;
+				var separationCoef = 200,
+					health = Config.Boat.getSpeedBoatConfig().stamina;
 
 				for(var i = 0; i < players.speedBoat.qty; i++) {
 					var speedBoat = speedBoats.create(separationCoef, 0, players.speedBoat.sprite);
-					speedBoats.getAt(i).damage = 0;
+					speedBoat.health = health;
 
 					speedBoat.anchor.setTo(0.5, 0.5)
 					speedBoat.angle = game.rnd.angle();
-					speedBoat.angle = -45;
+					speedBoat.angle = 90;
 
 					game.physics.arcade.enable(speedBoat);
 
 					speedBoat.body.bounce.y = 0;
 				    speedBoat.body.gravity.y = 0;
 				    speedBoat.body.collideWorldBounds = true;
+				    freightBoat.body.drag.set(0.2);
 
-					separationCoef += players.speedBoat.distance;
+					separationCoef += 100;
 				}
 
 				return speedBoats;
@@ -175,14 +177,14 @@
 			},
 
 			computeDamage = function(sb) {
-				sb.damage++;
+				sb.health--;
 			},
 
 			fireHandler = function(b, sb) {
 				b.kill();
 				computeDamage(sb);
 
-				if(sb.damage == players.speedBoat.damageLimit) {
+				if(sb.health == 0) {
 					sb.kill();
 				}
 
@@ -308,6 +310,10 @@
 
 			getChangeCharacterButton: function() {
 				return changeCharacterButton;
+			},
+
+			getCurrentlyControlled: function() {
+				return currentlyControlled;
 			}
 		} 
 

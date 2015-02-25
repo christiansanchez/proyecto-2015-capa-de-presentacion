@@ -1,6 +1,6 @@
 (function($, document, window, General, undefined) {
 
-	window.Gateway = (function() {
+	_.extend(window.Gateway, (function() {
 
 			var url = General.getServiceURL();
 
@@ -8,11 +8,12 @@
 				request: function(data, method) {
 					return $.ajax({
 						url: url + method,
-						data: data
+						data: data,
+						crossDomain: true
 					});
 				}
 			}
 
-		})();
+		})());
 
 })(jQuery, document, window, window.Config.General);

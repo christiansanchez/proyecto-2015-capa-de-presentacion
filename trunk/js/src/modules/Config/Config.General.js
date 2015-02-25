@@ -12,11 +12,11 @@
 				SPRITE: 'sprite',
 				IMAGE: 'image'
 			},
-
-			//SERVICE_URL = 'http://localhost:8080/axis2/services/WsFactibilidad/',
-			SERVICE_URL = 'http://localhost:8080/axis2/services/wservicejuego';
-			SOCKET_URL 	= 'ws://localhost:8080/examples/websocket/chat';
-			//SERVICE_URL = 'http://192.168.43.249/axis2/services/WsFactibilidad/';
+			
+			HOST		= 'localhost:8080',
+			SERVICE_URL = 'http://' + HOST + '/axis2/services/wservicejuego/',
+			//SOCKET_URL 	= 'ws://' + HOST + '/servidor/wsocketjuego';
+			SOCKET_URL	= 'ws://127.0.0.1:8080/servidor/wsocketjuego';
 
 		return {
 			

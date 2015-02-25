@@ -1,25 +1,26 @@
 (function(window, document, pubsub, Util, undefined) {
 
-	window.SocketManager = function() {
+	_.extend(window.SocketManager, (function() {
 
 		var ws,
 			gameStarted = false,
 
 			bindEvents = function() {
 
-				ws.onopen = function(event) {
+				ws.onopen = function(evt) {
+					console.debug('evt: ', evt);
 					/**
 					 * Not sure how this should be handled
 					 */
-					pubsub.publish(Engine.Events.NEW_PLAYER, Util.parseWebSocketData(event.data))
+					//pubsub.publish(Engine.evts.NEW_PLAYER, Util.parseWebSocketData(evt.data))
 				};
 
-				ws.onclose = function(event) {
-					ws.send(event.data);
+				ws.onclose = function(evt) {
+					ws.send(evt.data);
 				};
 
-				ws.onmessage = function(event) {
-					var data = Util.parseWebSocketData(event.data);
+				ws.onmessage = function(evt) {
+					var data = Util.parseWebSocketData(evt.data);
 					pubsub.publish(data.evt, data.data);
 				};
 
@@ -49,6 +50,6 @@
 			}
 		}
 
-	};
+	})());
 
 })(window, document, jQuery.pubsub, window.Util);
