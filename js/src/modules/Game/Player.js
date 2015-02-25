@@ -2,7 +2,8 @@
 
 	window.Player = function(options) {
 
-		var isFreightBoat = PlayerConfig.isFreightBoat(options.type),
+		var type = options.type || (options.rolPartida == 'BARCOCARGUERO' ? 'freightBoat' : 'speedBoat'),
+			isFreightBoat = PlayerConfig.isFreightBoat(type),
 			boats = [],
 			sprite,
 
@@ -18,10 +19,10 @@
 			},
 
 			setSprite = function() {
-				sprite = PlayerConfig.getSprite(options.type);
+				sprite = PlayerConfig.getSprite(type);
 			};
 
-			setBoats(options.type);
+			setBoats(type);
 			setSprite();
 
 		return {
@@ -34,7 +35,7 @@
 			},
 			
 			getType: function() {
-				return options.type;
+				return type;
 			}
 		}
 

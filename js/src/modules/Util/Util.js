@@ -2,25 +2,104 @@
 
 	window.Util = (function() {
 
-		var RESULTS_NODE = 'return',
-			OBJECT_SEPARATOR = ';';
+		var KEY_ATTR_SEPARATOR = ':',
+			OBJECT_SEPARATOR = ';',
+
+			/**
+			 * Constants used for the Web Service
+			 * requests
+			 */
+			RESULTS_NODE 		= 'return',
+			DATA_PLACEHOLDER 	= '{{=data}}',
+			OBJECT_WRAPPER 		= '{' + DATA_PLACEHOLDER + '}',
+
+			/**
+			 * Constants used for Web Sockets messaging
+			 */
+			ACTION_PLACEHOLDER 	= '{{=action}}',
+			ACTION 				= 'requestAction:' + ACTION_PLACEHOLDER,
+			ATTR_SEPARATOR 		= ',',
 
 			parseToObject = function(data) {
 				return _.map(data.split(OBJECT_SEPARATOR), function(obj) {
-						return JSON.parse(obj);
+						return JSON.parse(OBJECT_WRAPPER.replace(DATA_PLACEHOLDER, obj));
 					});
+			},
+
+			setSocketString = function(data) {
+				var str 	= '',
+					counter = 0;
+
+				for(attr in data) {
+					if(counter) {
+						str += ATTR_SEPARATOR;
+					}
+
+					str += attr + KEY_ATTR_SEPARATOR + data[attr];
+					counter++;
+				}
+
+				return str;
 			};
 
 		return {
-			parseWebServiceData: function(response) {
-				return parseToObject($(response).find(RESULTS_NODE).text());
+			
+			getResponseText: function(data) {
+				return unescape($(data).find(RESULTS_NODE).text());
+			},
+
+			parseWebServiceData: function(data) {
+				return parseToObject(data);
 			},
 
 			parseWebSocketData: function(data) {
 				return data;
+			},
+
+			parseToSendWebSocketData: function(action, data) {
+				return ACTION.replace(ACTION_PLACEHOLDER, action) +
+						OBJECT_SEPARATOR + 
+						setSocketString(data);
+			},
+
+			parseToSaveMatch: function(freightBoat, speedBoat) {
+
+			},
+
+			parseBoatsData: function(data) {
+				var parsedData = {
+						freightBoat: {
+							x: 0,
+							y: 0,
+							hoses: []
+						},
+						speedBoats: []
+					};
+
+				/*for(attr in data) {
+					var currentData = data[attr];
+
+					if(attr.indexOf('manguera') != -1) {
+						var numHose = attr.split('manguera')[1];
+
+						if(numHose > 0) {
+							for(var i = 0; i < (numHose - 1); i++) {
+								parsedData.freightBoat.hoses.push(false);
+							}
+
+							parsedData.freightBoat.hoses[i] = currentData;
+						}
+					} else if(attr.indexOf('Barco') != -1) {
+						var posData = attr.split('Barco')[0];
+					} else if(attr.indexOf('Lancha') != -1) {
+
+					}
+				}*/	
+
+				return parsedData;
 			}
 		}
 
 	})();
 
-})(jQuery, document, window);
+})(jQuery, window, document);

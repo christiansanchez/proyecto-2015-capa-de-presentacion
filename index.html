@@ -30,8 +30,8 @@
 							<div id="actions" class="btn-group-vertical col-lg-12" role="group">
 								<ul class="list-unstyled padded text-center">
 									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="create">Nueva partida</button></li>
-									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-type="started">Unirse a una partida en curso</button></li>
-									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-type="saved">Cargar partida</button></li>
+									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-method="getUnirsePartida">Unirse a una partida en curso</button></li>
+									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-method="getCargarPartida">Cargar partida</button></li>
 								</ul>
 							</div>
 						</div>
@@ -70,13 +70,12 @@
 	<script type="text/javascript" src="js/src/modules/Config/Config.Map.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.Player.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.Boat.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/Util.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/SocketManager.Methods.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/SocketManager.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/Gateway.Methods.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/Gateway.js"></script>
 	<script type="text/javascript" src="js/src/modules/Menu/Templates.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.Actions.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.Validation.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.View.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Assets.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Boat.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Player.js"></script>
@@ -84,6 +83,10 @@
 	<script type="text/javascript" src="js/src/modules/Game/Engine.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Game.Map.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Game.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.Actions.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.Validation.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.View.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.js"></script>
 	<script type="text/javascript" src="js/src/modules/Test/Test.js"></script>
 	<!-- Templates for the menu -->
 	<div id="tpl-wrapper">
@@ -92,16 +95,26 @@
 				<h2>Nueva partida</h2>
 				<hr>
 				<div id="create" class="btn-group-vertical col-lg-12" role="group">
-					<form class="form-horizontal" action="javascript:;" method="post">
+					<form class="form-horizontal" action="javascript:;" method="post" data-action="create">
 						<legend>Ingrese el nombre de partida</legend>
 						<div class="form-group">
 						    <label for="name" class="col-sm-2 control-label">Nombre de partida</label>
 						    <div class="col-sm-10">
-						      <input type="text" class="form-control" id="name" name="name" placeholder="Nombre">
+						      <input type="text" class="form-control" id="nombrePartida" name="nombrePartida" placeholder="Nombre">
 						    </div>
-						  </div>
-						  <button type="submit" class="btn-sm btn-success">Crear</button>
-						  <button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
+						</div>
+						<div class="form-group">
+						    <label for="name" class="col-sm-2 control-label">Tipo de Escenario</label>
+						    <div class="col-sm-10">
+						    	<select name="tipoMapa" id="">
+						    		<option value="ISLAS">Islas</option>
+						    		<option value="MARABIERTO">Mar Abierto</option>
+						    	</select>
+						    </div>
+						</div>
+						<input type="hidden" id="rolPartida" name="rolPartida" value="BARCOCARGUERO">
+						<button type="submit" class="btn-sm btn-success">Crear</button>
+						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
 					</form>
 				</div>
 			</div>
@@ -111,18 +124,21 @@
 				<h2>Unirse a una partida</h2>
 				<hr>
 				<div id="join" class="btn-group-vertical col-lg-12" role="group">
-					<form class="form-horizontal" action="javascript:;" method="post">
+					<form class="form-horizontal" action="javascript:;" method="post" data-action="join">
 						<legend>Seleccione la partida a la que desea unirse</legend>
 						<div class="form-group">
 						    <ul class="list-unstyled text-center">
-								<li><button type="button" class="btn-lg btn-default">Partida 1</button></li>
-								<li><button type="button" class="btn-lg btn-default">Partida 2</button></li>
-								<li><button type="button" class="btn-lg btn-default">Partida 3</button></li>
+						    <% _.each(partidas, function(partida) { %>
+						    	<li>
+									<input type="radio" name="idPartida" value="<%= partida.nombrePartida %>"/>
+									<label class="control-label" for="idPartida"><%= partida.nombrePartida %></label>
+								</li>
+						    <% }) %>
 							</ul>
 						</div>
 						<button type="submit" class="btn-sm btn-success">Unirse</button>
 						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
-						<input type="hidden" name="id" value="">
+						<input type="hidden" name="rolPartida" value="PIRATA">
 					</form>
 				</div>
 			</div>
@@ -132,18 +148,21 @@
 				<h2>Cargar una partida</h2>
 				<hr>
 				<div id="load" class="btn-group-vertical col-lg-12" role="group">
-					<form class="form-horizontal" action="javascript:;" method="post">
+					<form class="form-horizontal" action="javascript:;" method="post" data-action="load">
 						<legend>Seleccione la partida que desea cargar</legend>
 						<div class="form-group">
 						    <ul class="list-unstyled text-center">
-								<li><button type="button" class="btn-lg btn-default">Partida 3</button></li>
-								<li><button type="button" class="btn-lg btn-default">Partida 4</button></li>
-								<li><button type="button" class="btn-lg btn-default">Partida 5</button></li>
+								<% _.each(partidas, function(partida) { %>
+							    	<li>
+										<input type="radio" name="nombrePartida" value="<%= partida.nombrePartida %>"/>
+										<label class="control-label" for="idPartida"><%= partida.nombrePartida %></label>
+									</li>
+							    <% }) %>
 							</ul>
 						</div>
 						<button type="submit" class="btn-sm btn-success" data-action="load">Cargar</button>
 						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
-						<input type="hidden" name="id" value="">
+						<input type="hidden" name="rolPartida" value="BARCOCARGUERO">
 					</form>
 				</div>
 			</div>

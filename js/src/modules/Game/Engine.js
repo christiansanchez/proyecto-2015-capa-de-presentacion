@@ -2,7 +2,7 @@
 
 	_.extend(window.Engine, (function() {
 
-		var playersLimit = Config.getPlayersLimit(),
+		var playersLimit = Config.Player.getPlayersLimit(),
 			players = [],
 			localPlayer,
 
@@ -27,6 +27,13 @@
 					
 					Game.init();
 				}
+
+				// SocketManager.send(
+				// 		Util.parseToSendWebSocketData(
+				// 				SocketManager.Methods.getJoinMethod(),
+				// 				data
+				// 			)
+				// 	)
 			},
 
 			abandon = function(evt, data) {
@@ -83,4 +90,4 @@
 
 	})());
 
-})(jQuery, window, document, window.Engine.Events, window.Config.Player, window.Player);
+})(jQuery, window, document, window.Engine.Events, window.Config, window.Player);

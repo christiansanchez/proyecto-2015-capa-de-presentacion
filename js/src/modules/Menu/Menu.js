@@ -11,15 +11,9 @@
 			return {
 				
 				init: function() {
-					/*Gateway.request({
-						method: 'getPartidas'	
-					}).then(function(data) {
-						matches = parseWebServiceData(data);
-						View.bindEvents();
-					});*/
-
+					SocketManager.init(Config.getSocketURL());
 					Templates.init();
-					//SocketManager.init(Config.getSocketURL());
+					Engine.init();
 					View.bindEvents();
 				}, 
 
