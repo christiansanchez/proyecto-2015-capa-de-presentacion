@@ -15,7 +15,7 @@
 
 			newPlayer = function(evt, data) {
 				if(players.length < playersLimit) {
-					players.push(new Player(data));
+					players.push(new Player(_.isArray(data) ? data[0] : data));
 					$.modal.close();
 					Menu.View.showWaiting();
 				}
@@ -25,14 +25,7 @@
 					$('#game-wrapper').removeClass('hidden');
 					
 					$.modal.close();
-					Game.init();
-
-					SocketManager.send(
-						Util.parseToSendWebSocketData(
-								SocketManager.Methods.getJoinMethod(),
-								data
-							)
-					)
+					Game.init(data);
 				}
 
 				// SocketManager.send(

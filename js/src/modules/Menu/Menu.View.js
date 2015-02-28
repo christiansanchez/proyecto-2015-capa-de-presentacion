@@ -53,28 +53,6 @@
 					$.modal($('#waiting-tpl').html());
 				},
 
-				showStep = function(e) {
-					var clicked = $(e.target),
-						data 	= clicked.data(),
-						deferred;
-
-					if(data.method) {
-						Gateway.request(null, data.method).then(function(response) {
-							response = Util.getResponseText(response);
-
-							if(response) {
-								showModal(data.target, {
-									partidas: Util.parseWebServiceData(response)
-								});
-							} else {
-								alert('No hay partidas a las que unirse.');
-							}
-						});
-					} else {
-						showModal(data.target, null);
-					}
-				},
-
 				create = function(e) {
 					var data = $(e.target).serializeForm();
 
@@ -89,6 +67,7 @@
 								}	
 							)
 						);
+					}
 				},
 
 				join = function(e) {
