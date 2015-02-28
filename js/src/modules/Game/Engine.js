@@ -16,16 +16,23 @@
 			newPlayer = function(evt, data) {
 				if(players.length < playersLimit) {
 					players.push(new Player(data));
+					$.modal.close();
+					Menu.View.showWaiting();
 				}
 
 				if(players.length == playersLimit) {
-					/**
-					 * Must be a better way to have this done
-					 */
 					$('#menu-container').addClass('hidden');
 					$('#game-wrapper').removeClass('hidden');
 					
+					$.modal.close();
 					Game.init();
+
+					SocketManager.send(
+						Util.parseToSendWebSocketData(
+								SocketManager.Methods.getJoinMethod(),
+								data
+							)
+					)
 				}
 
 				// SocketManager.send(
@@ -62,6 +69,11 @@
 			bindEvents = function() {
 
 				jQuery.pubsub.subscribe(Events.NEW_PLAYER, newPlayer);
+
+				jQuery.pubsub.subscribe('setPartida', newPlayer); // Crear
+				jQuery.pubsub.subscribe('getUnirsePartida', Menu.View.showModal); // Elegir partida a unirse
+				jQuery.pubsub.subscribe('unirse', newPlayer); // Unirse
+
 				jQuery.pubsub.subscribe(Events.SHOT_PLAYER, shoot);
 				jQuery.pubsub.subscribe(Events.KILL_PLAYER, kill);
 				jQuery.pubsub.subscribe(Events.MOVE_PLAYER, move);
