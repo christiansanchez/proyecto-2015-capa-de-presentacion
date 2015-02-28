@@ -12,11 +12,7 @@
 					alert('There was an error.');
 				},
 
-<<<<<<< .mine
 				/*showModal = function(target, data) {
-=======
-				showModal = function(target, data) {
->>>>>>> .r15
 					$.modal(
 							Templates.compileTemplate(
 								target, 
@@ -36,7 +32,6 @@
 						);
 				},
 
-<<<<<<< .mine
 				showStep = function(e) {
 					var clicked = $(e.target),
 						data 	= clicked.data(),
@@ -58,7 +53,6 @@
 					$.modal($('#waiting-tpl').html());
 				},
 
-=======
 				showStep = function(e) {
 					var clicked = $(e.target),
 						data 	= clicked.data(),
@@ -81,9 +75,7 @@
 					}
 				},
 
->>>>>>> .r15
 				create = function(e) {
-<<<<<<< .mine
 					var data = $(e.target).serializeForm();
 
 					if(Validation.validate(data, Engine.Events.CREATE)) {
@@ -97,41 +89,12 @@
 								}	
 							)
 						);
-
-=======
-					var data = $(e.target).serializeForm();
-
-					if(Validation.validate(data, Engine.Events.CREATE)) {
-						Gateway.request({
-								nombrePartida: data.nombrePartida,
-								rolPartida: data.rolPartida,
-								tipoMapa: data.tipoMapa
-							},
-							Methods.getCreateMethod()
-						).then(function(data) {
-							data = Util.getResponseText(data);
-
-							if(data) {
-								$.pubsub.publish(Engine.Events.NEW_PLAYER, {
-									type: 'freightBoat'
-								});
-							}
-						});
->>>>>>> .r15
-					} else {
-						showErrors();
-					}
 				},
 
 				join = function(e) {
-<<<<<<< .mine
 					var data = $(e.target).serializeForm();
 					data = Util.parseToObject(data.nombrePartida);
-=======
-					var data = $(e.target).serializeForm();
->>>>>>> .r15
 
-<<<<<<< .mine
 					if(Validation.validate(data[0], Engine.Events.JOIN)) {
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
@@ -150,25 +113,6 @@
 					} else {
 						showErrors();
 					}
-=======
-					if(Validation.validate(data, Engine.Events.JOIN)) {
-						Gateway.request(
-							data, 
-							Methods.getSetJoinMethod()
-						).then(function(response) {
-							response = Util.getResponseText(response);
-
-							if(response) {
-								$.pubsub.publish(
-										Engine.Events.NEW_PLAYER, 
-										_.extend(data, Util.parseWebServiceData(response))
-									);
-							}
-						});
-					} else {
-						showErrors();
-					}
->>>>>>> .r15
 				},
 
 				load = function(e) {
@@ -213,7 +157,6 @@
 					body.on('submit', '[data-action="join"]', join);
 					body.on('submit', '[data-action="load"]', load);
 					body.on('click', '[data-action="back"]', back);
-<<<<<<< .mine
 
 					body.on('save', '[data-action="save"]', save);
 				},
@@ -221,11 +164,6 @@
 				showModal: showModal,
 
 				showWaiting: showWaiting
-=======
-
-					body.on('save', '[data-action="save"]', save);
-				}
->>>>>>> .r15
 			};
 
 		})();
