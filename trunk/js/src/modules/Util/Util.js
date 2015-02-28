@@ -24,7 +24,6 @@
 				return _.map(data.split(OBJECT_SEPARATOR), function(obj) {
 						return JSON.parse(OBJECT_WRAPPER.replace(DATA_PLACEHOLDER, obj));
 					});
-<<<<<<< .mine
 			},
 
 			setSocketString = function(data) {
@@ -41,7 +40,6 @@
 				}
 
 				return str;
-=======
 			},
 
 			setSocketString = function(data) {
@@ -58,7 +56,6 @@
 				}
 
 				return str;
->>>>>>> .r15
 			};
 
 		return {
@@ -72,7 +69,6 @@
 			},
 
 			parseWebSocketData: function(data) {
-<<<<<<< .mine
 				var arr = data.split(';'),
 					action = arr[0].split('responseAction:')[1];
 
@@ -135,10 +131,7 @@
 				return parsedData;
 			},
 
-			parseToObject: parseToObject
-=======
-				return data;
-			},
+			parseToObject: parseToObject,
 
 			parseToSendWebSocketData: function(action, data) {
 				return ACTION.replace(ACTION_PLACEHOLDER, action) +
@@ -182,7 +175,6 @@
 
 				return parsedData;
 			}
->>>>>>> .r15
 		}
 
 	})();

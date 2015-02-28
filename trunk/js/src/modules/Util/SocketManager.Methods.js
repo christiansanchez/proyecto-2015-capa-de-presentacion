@@ -1,4 +1,3 @@
-<<<<<<< .mine
 (function(window, document, pubsub, Util, undefined) {
 
 	window.SocketManager = {}
@@ -74,4 +73,4 @@
 
 	})();
 
-})(window, document, jQuery.pubsub, window.Util);>>>>>>> .r15
+})(window, document, jQuery.pubsub, window.Util);
