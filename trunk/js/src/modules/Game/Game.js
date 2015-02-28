@@ -18,7 +18,6 @@
 
 			fireButton,
 			changeCharacterButton,
-			controllingFreightBoat = true,
 			currentlyControlled,
 			speedBoatIndex,
 
@@ -26,6 +25,18 @@
 			 * To be checked why
 			 */
 			bulletTime = 0,
+			gameStarted = false,
+			playerData,
+
+			setCurrentlyControlled = function(data) {
+				data = _.isArray(data) ? data[0] : data;
+
+				if(data && data.type && !Config.Player.isFreightBoat(data.type || data.rolPartida)) {
+					currentlyControlled = speedBoats.children[0];
+				} else {
+					currentlyControlled = freightBoat;
+				}
+			},
 
 			loadImages = function(game) {
 				var images = Assets.getImages();
@@ -204,41 +215,33 @@
 			},
 
 			changeCharacter = function(game) {
-				if(changeCharacterButton._justDown) {
-					if(controllingFreightBoat) {
-						controllingFreightBoat = false;
-						speedBoatIndex = 0;
-						currentlyControlled = speedBoats.children[speedBoatIndex];
-					} else if(speedBoatIndex < speedBoats.children.length - 1) {
-						speedBoatIndex++;
-						currentlyControlled = speedBoats.children[speedBoatIndex];
-					} else {
-						currentlyControlled = freightBoat;
-						controllingFreightBoat = true;
-						speedBoatIndex = 0;
-					}
-				}
+				
 			};
 
 		return {
 
-			init: function() {
+			init: function(data) {
 				var self = this;
 
-				instance = new Phaser.Game(
-					Config.Map.getWidth(), 
-					Config.Map.getHeight(), 
-					Config.Map.getRender(),
-					Config.Map.getContainer(),
-					{
-						preload: self.preload,
-						create: self.create,
-						update: self.update
-					}
-				)
+				if(!gameStarted) {
+					instance = new Phaser.Game(
+						Config.Map.getWidth(), 
+						Config.Map.getHeight(), 
+						Config.Map.getRender(),
+						Config.Map.getContainer(),
+						{
+							preload: self.preload,
+							create: self.create,
+							update: self.update
+						}
+					)
+					gameStarted = true;
 
-				$('#menu-container').addClass('hidden');
-				$('#game-wrapper').removeClass('hidden');
+					$('#menu-container').addClass('hidden');
+					$('#game-wrapper').removeClass('hidden');
+
+					playerData = data;
+				}
 			},
 
 			preload: function(game) {
@@ -253,6 +256,8 @@
 				initSpeedboats(game);
 				initBullets(game);
 				addActions(game);
+
+				setCurrentlyControlled(playerData);
 			},
 
 			update: function(game) {

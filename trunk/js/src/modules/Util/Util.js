@@ -40,22 +40,6 @@
 				}
 
 				return str;
-			},
-
-			setSocketString = function(data) {
-				var str 	= '',
-					counter = 0;
-
-				for(attr in data) {
-					if(counter) {
-						str += ATTR_SEPARATOR;
-					}
-
-					str += attr + KEY_ATTR_SEPARATOR + data[attr];
-					counter++;
-				}
-
-				return str;
 			};
 
 		return {
@@ -76,7 +60,7 @@
 					arr[1] = arr[1].replace('"result":true,', '');
 				} else if(arr[1].indexOf('"result":false,') != -1) {
 					arr[1] = arr[1].replace('"result":false,', '');
-				} else if(arr[1].indexOf('"result":') != -1) {
+				} else if(arr[1].indexOf('"result":,') != -1 || arr[1].indexOf('"result":"n') != -1) {
 					arr[1] = arr[1].replace('"result":', '');
 				}
 
@@ -98,82 +82,10 @@
 
 			},
 
-			parseBoatsData: function(data) {
-				var parsedData = {
-						freightBoat: {
-							x: 0,
-							y: 0,
-							hoses: []
-						},
-						speedBoats: []
-					};
-
-				/*for(attr in data) {
-					var currentData = data[attr];
-
-					if(attr.indexOf('manguera') != -1) {
-						var numHose = attr.split('manguera')[1];
-
-						if(numHose > 0) {
-							for(var i = 0; i < (numHose - 1); i++) {
-								parsedData.freightBoat.hoses.push(false);
-							}
-
-							parsedData.freightBoat.hoses[i] = currentData;
-						}
-					} else if(attr.indexOf('Barco') != -1) {
-						var posData = attr.split('Barco')[0];
-					} else if(attr.indexOf('Lancha') != -1) {
-
-					}
-				}*/	
-
-				return parsedData;
-			},
-
 			parseToObject: parseToObject,
-
-			parseToSendWebSocketData: function(action, data) {
-				return ACTION.replace(ACTION_PLACEHOLDER, action) +
-						OBJECT_SEPARATOR + 
-						setSocketString(data);
-			},
 
 			parseToSaveMatch: function(freightBoat, speedBoat) {
 
-			},
-
-			parseBoatsData: function(data) {
-				var parsedData = {
-						freightBoat: {
-							x: 0,
-							y: 0,
-							hoses: []
-						},
-						speedBoats: []
-					};
-
-				/*for(attr in data) {
-					var currentData = data[attr];
-
-					if(attr.indexOf('manguera') != -1) {
-						var numHose = attr.split('manguera')[1];
-
-						if(numHose > 0) {
-							for(var i = 0; i < (numHose - 1); i++) {
-								parsedData.freightBoat.hoses.push(false);
-							}
-
-							parsedData.freightBoat.hoses[i] = currentData;
-						}
-					} else if(attr.indexOf('Barco') != -1) {
-						var posData = attr.split('Barco')[0];
-					} else if(attr.indexOf('Lancha') != -1) {
-
-					}
-				}*/	
-
-				return parsedData;
 			}
 		}
 
