@@ -2,7 +2,7 @@
 
 	window.Test = (function() {
 
-		Engine.init();
+//		Engine.init();
 
 		return {
 

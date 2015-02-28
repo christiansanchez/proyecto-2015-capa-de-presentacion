@@ -12,6 +12,10 @@
 				selector 		= 'script',
 				dataAttribute 	= 'action',
 
+				tplToEvents = {
+					getUnirsePartida: 'join'
+				},
+
 				cacheTemplates = function(wrapper) {
 					var templateWrapper = wrapper || DEFAULT_WRAPPER;
 
@@ -28,7 +32,9 @@
 				},
 
 				compileTemplate: function(action, data) {
-					return templates[action](data);
+					var id = action.target || tplToEvents[action];
+
+					return templates[id](data);
 				},
 
 				/**
