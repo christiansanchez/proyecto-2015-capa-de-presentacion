@@ -2,32 +2,60 @@
 
 	window.Menu.Validation = (function() {
 
-			var nameNotEmpty = function(data) {
-					return data.name && data.name.length > 0;
+			var errors = [],
+
+				reset = function() {
+					errors = [];
+				},
+
+				nameNotEmpty = function(data) {
+					var valid = data.nombrePartida && data.nombrePartida.length > 0,
+						message = valid ? '' : 'Por favor, ingresa un nombre para la partida.';
+
+					return {
+						valid: valid,
+						message: message
+					};
+
 				},
 
 				matchSelected = function(data) {
-					return data.id;
+					var valid = data.nombrePartida && data.nombrePartida.length > 0,
+						message = valid ? '' : 'Por favor, selecciona una partida.';
+
+					return {
+						valid: valid,
+						message: message
+					};
 				};
 
 			return {
 
 				validate: function(data, evt) {
-					// var valid = false;
+					var result;
 
-					// switch(evt) {
-					// 	case Events.CREATE:
-					// 		valid = nameNotEmpty(data);
-					// 		break;
+					reset();
 
-					// 	case Events.JOIN:
-					// 	case Events.LOAD:
-					// 		valid = matchSelected(data);
-					// 		break;
-					// }
+					switch(evt) {
+						case Events.CREATE:
+							result = nameNotEmpty(data);
+							break;
 
-					// return valid;
-					return true;
+						case Events.JOIN:
+						case Events.LOAD:
+							result = matchSelected(data);
+							break;
+					}
+
+					if(!result.valid) {
+						errors.push(result.message);
+					}
+
+					return !!result.valid;
+				},
+
+				getErrors: function() {
+					return errors;
 				}
 			};
 

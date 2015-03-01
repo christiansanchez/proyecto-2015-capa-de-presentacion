@@ -9,7 +9,9 @@
 				body = $('body'),
 
 				showErrors = function() {
-					alert('There was an error.');
+					var errors = Validation.getErrors();
+
+					$('.actions-modal').after(errors[0]);
 				},
 
 				/*showModal = function(target, data) {
@@ -72,6 +74,8 @@
 								}	
 							)
 						);
+					} else {
+						showErrors();
 					}
 				},
 
@@ -130,7 +134,17 @@
 				},
 
 				abandon = function(e) {
+					$.modal.close();
+
 					var match = Game.getMatch();
+
+					/**
+					 * For the case when the user creates a match and then
+					 * click on "Cancelar"
+					 */
+					if(match) {
+						match = Matches.getMatches()[0];
+					}
 
 					SocketManager.send(
 							Util.parseToSendWebSocketData(
@@ -148,7 +162,7 @@
 					body.on('submit', '[data-action="create"]', create);
 					body.on('submit', '[data-action="join"]', join);
 					body.on('submit', '[data-action="load"]', load);
-					body.on('submit', '[data-action="abandon"]', abandon);
+					body.on('click', '[data-action="abandon"]', abandon);
 					body.on('click', '[data-action="save"]', save);
 					
 					body.on('click', '[data-action="back"]', back);
