@@ -60,7 +60,9 @@
 					arr[1] = arr[1].replace('"result":true,', '');
 				} else if(arr[1].indexOf('"result":false,') != -1) {
 					arr[1] = arr[1].replace('"result":false,', '');
-				} else if(arr[1].indexOf('"result":,') != -1 || arr[1].indexOf('"result":"n') != -1) {
+				} else if(arr[1].indexOf('"result":,') != -1) {
+					arr[1] = arr[1].replace('"result":,', '');
+				} else if(arr[1].indexOf('"result":"n') != -1 || arr[1].indexOf('"result":,') != -1) {
 					arr[1] = arr[1].replace('"result":', '');
 				}
 
@@ -78,15 +80,42 @@
 						setSocketString(data);
 			},
 
-			parseToSaveMatch: function(freightBoat, speedBoat) {
+			parseToSaveMatch: function(freightBoat, speedBoats, match) {
+				var obj = _.extend(match, {
+						posicionBarcoX: freightBoat.position.x,
+						posicionBarcoY: freightBoat.position.y,
+						anguloBarco: freightBoat.angle
+					}),
+					speedBoatsInfo = speedBoats.children;
+
+				for(var i = 1; i <= freightBoat.health; i++) {
+					obj['manguera' + i] = true;
+				}
+
+				var deadHose = Config.Boat.getDefaultConfig().stamina - i;
+
+				if(deadHose > 0) {
+					for(; i <= deadHose; i++) {
+						obj['manguera' + i] = false;
+					}
+				}
+
+
+				/**
+				 * Data speedBoats
+				 */
+				for(var i = 0, speedBoat; speedBoat = speedBoatsInfo[i]; i++) {
+					obj['posicionXLancha' + (i + 1)] = speedBoat.position.x;
+					obj['posicionYLancha' + (i + 1)] = speedBoat.position.y;
+					obj['energiaLancha' + (i + 1)] = speedBoat.health;
+					obj['anguloLancha' + (i + 1)] = speedBoat.angle;
+				}
+
+				return this.parseToSendWebSocketData('guardar', obj);
 
 			},
 
-			parseToObject: parseToObject,
-
-			parseToSaveMatch: function(freightBoat, speedBoat) {
-
-			}
+			parseToObject: parseToObject
 		}
 
 	})();

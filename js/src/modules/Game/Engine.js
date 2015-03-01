@@ -3,8 +3,9 @@
 	_.extend(window.Engine, (function() {
 
 		var playersLimit = Config.Player.getPlayersLimit(),
-			players = [],
 			localPlayer,
+			currentMatch,
+			role,
 
 			endGame = function() {
 				/**
@@ -14,13 +15,28 @@
 			},
 
 			newPlayer = function(evt, data) {
-				if(players.length < playersLimit) {
-					players.push(new Player(_.isArray(data) ? data[0] : data));
+				data = _.isArray ? data[0] : data;
+
+				var match = Matches.getMatch(data.nombrePartida);
+
+				if(!match) {
+					Matches.addMatch(data);
+					match = Matches.getMatch(data.nombrePartida);
+				} else {
+					match.status = data.status;
+				}
+
+				if(Matches.getPlayers(data.nombrePartida).length < playersLimit) {
+					Matches.addPlayer(data.nombrePartida, new Player(data));
 					$.modal.close();
 					Menu.View.showWaiting();
 				}
 
-				if(players.length == playersLimit) {
+				if(!role) {
+					role = data.rolPartida;
+				}
+
+				if(match.status == 'ENCURSO' || Matches.getPlayers(data.nombrePartida).length == playersLimit) {
 					$('#menu-container').addClass('hidden');
 					$('#game-wrapper').removeClass('hidden');
 					
@@ -62,15 +78,20 @@
 			bindEvents = function() {
 
 				jQuery.pubsub.subscribe(Events.NEW_PLAYER, newPlayer);
-
 				jQuery.pubsub.subscribe('setPartida', newPlayer); // Crear
-				jQuery.pubsub.subscribe('getUnirsePartida', Menu.View.showModal); // Elegir partida a unirse
 				jQuery.pubsub.subscribe('unirse', newPlayer); // Unirse
 
-				jQuery.pubsub.subscribe(Events.SHOT_PLAYER, shoot);
-				jQuery.pubsub.subscribe(Events.KILL_PLAYER, kill);
-				jQuery.pubsub.subscribe(Events.MOVE_PLAYER, move);
-				jQuery.pubsub.subscribe(Events.ABANDON_PLAYER, abandon);
+				jQuery.pubsub.subscribe('getUnirsePartida', Menu.View.showModal); // Elegir partida a unirse
+				jQuery.pubsub.subscribe('getCargarPartida', Menu.View.showModal); // Elegir partida a unirse
+
+				jQuery.pubsub.subscribe('mover', Game.move); // Mover
+				jQuery.pubsub.subscribe('virar', Game.turn); // Virar
+				jQuery.pubsub.subscribe('abandonar', abandon); // Virar
+
+				// jQuery.pubsub.subscribe(Events.SHOT_PLAYER, shoot);
+				// jQuery.pubsub.subscribe(Events.KILL_PLAYER, kill);
+				// jQuery.pubsub.subscribe(Events.MOVE_PLAYER, move);
+				// jQuery.pubsub.subscribe(Events.ABANDON_PLAYER, abandon);
 
 			};
 
@@ -90,6 +111,18 @@
 
 			getLocalPlayer: function() {
 				return localPlayer;
+			},
+
+			getCurrentMatch: function() {
+				return currentMatch;
+			},
+
+			getMatchName: function() {
+				return currentMatch.name;
+			},
+
+			getRole: function() {
+				return role;
 			}
 		}
 

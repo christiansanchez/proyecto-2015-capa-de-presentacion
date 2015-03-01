@@ -7,6 +7,8 @@
 		var CREATE 		= 'setPartida',
 			GET_JOIN 	= 'getUnirsePartida',
 			JOIN 		= 'unirse',
+			GET_LOAD 	= 'getCargarPartida',
+			SET_JOIN 	= 'setCargarPartida',
 			SHOOT 		= 'disparar',
 			KILL 		= 'matar',
 			ARRIVE 		= 'llegar';
@@ -23,6 +25,14 @@
 
 			getJoinMethod: function() {
 				return JOIN;
+			},
+
+			getGetLoadMethod: function() {
+				return GET_LOAD;
+			},
+
+			getLoadMethod: function() {
+				return LOAD;
 			},
 
 			getShootMethod: function() {

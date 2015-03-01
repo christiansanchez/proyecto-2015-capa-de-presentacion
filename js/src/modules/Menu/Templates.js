@@ -13,7 +13,8 @@
 				dataAttribute 	= 'action',
 
 				tplToEvents = {
-					getUnirsePartida: 'join'
+					getUnirsePartida: 'join',
+					getCargarPartida: 'load'
 				},
 
 				cacheTemplates = function(wrapper) {
