@@ -4,6 +4,7 @@
 
 		var ws,
 			gameStarted = false,
+			socketCounter = 0,
 
 			bindEvents = function() {
 
@@ -21,7 +22,13 @@
 
 				ws.onmessage = function(evt) {
 					var data = Util.parseWebSocketData(evt.data);
-					pubsub.publish(data.evt, data.data);
+					console.log('socketCounter: ', socketCounter++);
+
+					if(data.evt == 'dibujar') {
+						pubsub.publish(data.data[0].evt, data.data[0]);
+					} else {
+						pubsub.publish(data.evt, data.data);
+					}
 				};
 
 			};

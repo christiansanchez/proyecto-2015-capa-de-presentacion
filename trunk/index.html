@@ -47,8 +47,8 @@
 							</button>
 						</div>
 						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-3">
-							<button type="button" class="btn btn-primary navbar-btn" data-action="showstep" data-target="save">Guardar partida</button>
-							<button type="button" class="btn btn-primary navbar-btn" data-action="showstep" data-target="abandon">Abandonar partida</button>
+							<button type="button" class="btn btn-primary navbar-btn" data-action="save">Guardar partida</button>
+							<button type="button" class="btn btn-primary navbar-btn" data-action="abandon" data-target="abandon">Abandonar partida</button>
 						</div>
 					</div>
 				</nav>
@@ -76,6 +76,7 @@
 	<script type="text/javascript" src="js/src/modules/Util/Gateway.Methods.js"></script>
 	<script type="text/javascript" src="js/src/modules/Util/Gateway.js"></script>
 	<script type="text/javascript" src="js/src/modules/Menu/Templates.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Matches.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Assets.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Boat.js"></script>
 	<script type="text/javascript" src="js/src/modules/Game/Player.js"></script>
@@ -127,22 +128,22 @@
 					<form class="form-horizontal" action="javascript:;" method="post" data-action="join">
 						<legend>Seleccione la partida a la que desea unirse</legend>
 						<div class="form-group">
-						    <ul class="list-unstyled text-center">
-						    <% _.each(partidas, function(partida) { %>
-						    	<li>
-									<input type="radio" name="nombrePartida" value="&quot;nombrePartida&quot;:&quot;<%= partida.nombrePartida %>&quot;,&quot;rolPartida&quot;:&quot;PIRATA&quot;,&quot;tipoMapa&quot;:&quot;<%= partida.tipoMapa %>&quot;"/>
-									<label class="control-label" for="nombrePartida"><%= partida.nombrePartida %></label>
-								</li>
-						    <% }) %>
-						    <% _.each(partidas, function(partida) { %>
-						    	<li>
-									<input type="radio" name="idPartida" value="<%= partida.nombrePartida %>"/>
-									<label class="control-label" for="idPartida"><%= partida.nombrePartida %></label>
-								</li>
-						    <% }) %>
-							</ul>
+							<% if(partidas && partidas.length) { %>
+							    <ul class="list-unstyled text-center">
+								    <% _.each(partidas, function(partida) { %>
+								    	<li>
+											<input type="radio" name="nombrePartida" value="&quot;nombrePartida&quot;:&quot;<%= partida.nombrePartida %>&quot;,&quot;rolPartida&quot;:&quot;PIRATA&quot;,&quot;tipoMapa&quot;:&quot;<%= partida.tipoMapa %>&quot;,&quot;status&quot;:&quot;<%= partida.status %>&quot;"/>
+											<label class="control-label" for="nombrePartida"><%= partida.nombrePartida %></label>
+										</li>
+								    <% }) %>
+								</ul>
+							<% } else { %>
+								<p>No se encontraron partidas a las que unirse.</p>
+							<% } %>
 						</div>
-						<button type="submit" class="btn-sm btn-success">Unirse</button>
+						<% if(partidas && partidas.length) { %>
+							<button type="submit" class="btn-sm btn-success">Unirse</button>
+						<% } %>
 						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
 						<input type="hidden" name="rolPartida" value="PIRATA">
 					</form>
@@ -157,16 +158,22 @@
 					<form class="form-horizontal" action="javascript:;" method="post" data-action="load">
 						<legend>Seleccione la partida que desea cargar</legend>
 						<div class="form-group">
-						    <ul class="list-unstyled text-center">
-								<% _.each(partidas, function(partida) { %>
-							    	<li>
-										<input type="radio" name="nombrePartida" value="<%= partida.nombrePartida %>"/>
-										<label class="control-label" for="idPartida"><%= partida.nombrePartida %></label>
-									</li>
-							    <% }) %>
-							</ul>
+							<% if(partidas && partidas.length) { %>
+							    <ul class="list-unstyled text-center">
+									<% _.each(partidas, function(partida) { %>
+								    	<li>
+												<input type="radio" name="nombrePartida" value="&quot;nombrePartida&quot;:&quot;<%= partida.nombrePartida %>&quot;,&quot;rolPartida&quot;:&quot;PIRATA&quot;,&quot;tipoMapa&quot;:&quot;<%= partida.tipoMapa %>&quot;,&quot;status&quot;:&quot;<%= partida.status %>&quot;"/>
+												<label class="control-label" for="nombrePartida"><%= partida.nombrePartida %></label>
+											</li>
+								    <% }) %>
+								</ul>
+							<% } else { %>
+								<p>No se encontraron partidas guardadas.</p>
+							<% } %>
 						</div>
-						<button type="submit" class="btn-sm btn-success" data-action="load">Cargar</button>
+						<% if(partidas && partidas.length) { %>
+							<button type="submit" class="btn-sm btn-success" data-action="load">Cargar</button>
+						<% } %>
 						<button type="button" class="btn-sm btn-error" data-action="back">Volver</button>
 						<input type="hidden" name="rolPartida" value="BARCOCARGUERO">
 					</form>
@@ -181,7 +188,6 @@
 				<form class="form-horizontal" action="javascript:;" method="post">
 					<button type="submit" class="btn-sm btn-success">Abandonar</button>
 					<button type="button" class="btn-sm btn-error" data-action="back">Continuar</button>
-					<input type="hidden" name="id" value="">
 				</form>
 			</div>
 		</script>

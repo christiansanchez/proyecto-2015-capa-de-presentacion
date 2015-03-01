@@ -2,7 +2,13 @@
 
 	window.Game = (function() {
 
-		var path 	= General.getAssetsPath(),
+		var GAME_ACTION = 'dibujar',
+			instance,
+			matchName,
+			match,
+
+			counter = 0,
+			path 	= General.getAssetsPath(),
 			types 	= General.getAssetTypes(),
 			players	= Player.getPlayers(),
 			coords  = {},
@@ -28,10 +34,8 @@
 			gameStarted = false,
 			playerData,
 
-			setCurrentlyControlled = function(data) {
-				data = _.isArray(data) ? data[0] : data;
-
-				if(data && data.type && !Config.Player.isFreightBoat(data.type || data.rolPartida)) {
+			initCurrentlyControlled = function(role) {
+				if(!Config.Player.isFreightBoat(role)) {
 					currentlyControlled = speedBoats.children[0];
 				} else {
 					currentlyControlled = freightBoat;
@@ -113,6 +117,7 @@
 				freightBoat.anchor.setTo(0.5, 0.5);
 				freightBoat.angle = game.rnd.angle();
 				freightBoat.angle = 90;
+				freightBoat.health = Config.Boat.getDefaultConfig().stamina;
 
 				game.physics.arcade.enable(freightBoat);
 
@@ -120,6 +125,8 @@
 			    freightBoat.body.gravity.y = 0;
 			    freightBoat.body.collideWorldBounds = true;
 			    freightBoat.body.drag.set(0.2);
+			    freightBoat.index = 0;
+			    freightBoat.id = 'freightboat';
 
 			    currentlyControlled = freightBoat;
 			    cursors = game.input.keyboard.createCursorKeys();
@@ -136,13 +143,15 @@
 					speedBoat.anchor.setTo(0.5, 0.5)
 					speedBoat.angle = game.rnd.angle();
 					speedBoat.angle = 90;
+					speedBoat.index = i;
+					speedBoat.id = 'speedboat';
 
 					game.physics.arcade.enable(speedBoat);
 
 					speedBoat.body.bounce.y = 0;
 				    speedBoat.body.gravity.y = 0;
 				    speedBoat.body.collideWorldBounds = true;
-				    freightBoat.body.drag.set(0.2);
+				    speedBoat.body.drag.set(0.2);
 
 					separationCoef += 100;
 				}
@@ -214,6 +223,40 @@
 			    changeCharacterButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
 			},
 
+			/**
+			 * Returns the ship that's expected to be moved
+			 */
+			getToMove = function(data) {
+				var toMove;
+
+				if(data.id && data.index) {
+					if(data.id == 'speedboat') {
+						toMove = speedBoats.children[data.index];
+					} else {
+						toMove = freightBoat;
+					}
+				} else {
+					toMove = currentlyControlled;
+				}
+
+				return toMove;
+			},
+
+			turn = function(data) {
+				var toTurn = getToMove(data);
+				toTurn.body.angularVelocity = data.forward ? 200 : -200;
+			},
+
+			move = function(game, data) {
+				var toMove = getToMove(data);
+
+				instance.physics.arcade.velocityFromAngle(
+					toMove.angle, 
+					data.forward ? 300 : -1 * 300, 
+					toMove.body.velocity
+				);
+			},
+
 			changeCharacter = function(game) {
 				
 			};
@@ -235,12 +278,15 @@
 							update: self.update
 						}
 					)
+
 					gameStarted = true;
 
 					$('#menu-container').addClass('hidden');
 					$('#game-wrapper').removeClass('hidden');
 
 					playerData = data;
+					matchName = data.nombrePartida;
+					match = data;
 				}
 			},
 
@@ -257,10 +303,12 @@
 				initBullets(game);
 				addActions(game);
 
-				setCurrentlyControlled(playerData);
+				initCurrentlyControlled(Engine.getRole());
 			},
 
 			update: function(game) {
+				motionData = {};
+
 				currentlyControlled.body.velocity.x = 0;
 			    currentlyControlled.body.velocity.y = 0;
 			    currentlyControlled.body.angularVelocity = 0;
@@ -274,26 +322,98 @@
 			     * To turn the boat around
 			     */
 			    if(cursors.left.isDown) {
-			        currentlyControlled.body.angularVelocity = -200;
-			    } else if (cursors.right.isDown) {
-			        currentlyControlled.body.angularVelocity = 200;
+			    	motionData = {
+			    		forward: false
+			    	}
+
+			    	turn(motionData);
+
+			    	SocketManager.send(
+				    	Util.parseToSendWebSocketData(
+				    		GAME_ACTION, 
+				    		_.extend(motionData, {
+					    		evt: 'virar',
+					    		id: currentlyControlled.id,
+					    		index: currentlyControlled.index,
+					    		nombrePartida: matchName
+					    	})
+				    	)
+			    	);
+			    } else if(cursors.right.isDown) {
+			    	motionData = {
+			    		forward: true
+			    	}
+
+			        turn(motionData);
+
+			        SocketManager.send(
+				    	Util.parseToSendWebSocketData(
+				    		GAME_ACTION, 
+				    		_.extend(motionData, {
+					    		evt: 'virar',
+					    		id: currentlyControlled.id,
+					    		index: currentlyControlled.index,
+					    		nombrePartida: matchName
+					    	})
+				    	)
+			    	);
 			    } 
 
 			    /**
 			     * To move it back and forth
 			     */
 			    if(cursors.up.isDown) {
-			        game.physics.arcade.velocityFromAngle(currentlyControlled.angle, 300, currentlyControlled.body.velocity);
+			    	console.log('counter at update: ', counter++);
+
+			    	motionData = {
+			    		forward: true
+			    	};
+
+			    	move(game, motionData);
+
+			    	SocketManager.send(
+				    	Util.parseToSendWebSocketData(
+				    		GAME_ACTION, 
+				    		_.extend(motionData, {
+					    		evt: 'mover',
+					    		id: currentlyControlled.id,
+					    		index: currentlyControlled.index,
+					    		forward: true,
+					    		nombrePartida: matchName
+					    	})
+				    	)
+			    	);
+
 			    } else if(cursors.down.isDown) {
-			    	game.physics.arcade.velocityFromAngle(currentlyControlled.angle, -300, currentlyControlled.body.velocity);
+			    	motionData = {
+			    		forward: false
+			    	};
+
+			    	move(game, motionData);
+
+			    	SocketManager.send(
+					    	Util.parseToSendWebSocketData(GAME_ACTION, {
+				    		evt: 'mover',
+				    		forward: false,
+				    		id: currentlyControlled.id,
+				    		index: currentlyControlled.index,
+				    		nombrePartida: matchName
+				    	})
+			    	);
 			    }
 
 			    if(fireButton.isDown) {
-			    	fire(game, currentlyControlled);
+			    	//fire(game, currentlyControlled);
+			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
+			    		turn: 'right'
+			    	}))*/
 			    }
 
 			    if(changeCharacterButton.isDown) {
-			    	changeCharacter(game, changeCharacterButton);
+			    	//changeCharacter(game, changeCharacterButton);
+			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
+			    		turn: 'right'
+			    	}))*/
 			    }
 			},
 
@@ -319,7 +439,18 @@
 
 			getCurrentlyControlled: function() {
 				return currentlyControlled;
-			}
+			},
+
+			getInstance: function() {
+				return game;
+			},
+
+			getMatch: function() {
+				return match;
+			},
+
+			move: move,
+			turn: turn
 		} 
 
 	})();

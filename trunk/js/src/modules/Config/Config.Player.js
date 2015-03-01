@@ -4,7 +4,8 @@
 			/**
 			 * Game objects settings
 			 */
-		var FREIGHT_BOAT = 1, 
+		var FREIGHT_BOAT = 1,
+			FREIGHT_BOAT_BACKEND = 'BARCOCARGUERO',
 
 			FREIGHT_BOATS_QTY	= 1,
 			SPEEDBOATS 			= 3,
@@ -47,7 +48,7 @@
 			},
 
 			isFreightBoat: function(type) {
-				return type == FREIGHT_BOAT;
+				return type == FREIGHT_BOAT || type == FREIGHT_BOAT_BACKEND;
 			},
 
 			getBullets: function() {

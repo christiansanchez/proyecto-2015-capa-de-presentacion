@@ -25,9 +25,13 @@
 					$.modal(
 							Templates.compileTemplate(
 								evt,
-								{ 
-									partidas: data
-								}
+								data && data.length && data[0].nombrePartida ?
+									{ 
+										partidas: data
+									} :
+									{
+										partidas: []
+									}
 							)
 						);
 				},
@@ -40,7 +44,7 @@
 					if(data.method) {
 						SocketManager.send(
 								Util.parseToSendWebSocketData(
-										SocketManager.Methods.getGetJoinMethod(),
+										data.method,
 										data
 									)
 							);
@@ -57,6 +61,7 @@
 					var data = $(e.target).serializeForm();
 
 					if(Validation.validate(data, Engine.Events.CREATE)) {
+
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
 								SocketManager.Methods.getCreateMethod(),
@@ -74,6 +79,10 @@
 					var data = $(e.target).serializeForm();
 					data = Util.parseToObject(data.nombrePartida);
 
+					if(!Matches.getMatch(data[0].nombrePartida)) {
+						Matches.addMatch(data[0]);
+					}
+
 					if(Validation.validate(data[0], Engine.Events.JOIN)) {
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
@@ -81,14 +90,11 @@
 								{
 									nombrePartida: data[0].nombrePartida,
 									rolPartida: data[0].rolPartida,
-									tipoMapa: data[0].tipoMapa
+									tipoMapa: data[0].tipoMapa,
+									type: 'speedBoat'
 								}	
 							)
 						);
-
-						$.pubsub.publish(Engine.Events.NEW_PLAYER, {
-							type: 'speedBoat'
-						});
 					} else {
 						showErrors();
 					}
@@ -98,19 +104,13 @@
 					var data = $(e.target).serializeForm();
 
 					if(Validation.validate(data, Engine.Events.LOAD)) {
-						Gateway.request(
-							data,
-							Methods.getSetLoadMethod()
-						).then(function(response) {
-							response = Util.getResponseText(response);
+						SocketManager.send(
+								Util.parseToSendWebSocketData(
+									Methods.getLoadMethod(),
+									data
+								)
+							);
 
-							if(response) {
-								$.pubsub.publish(
-										Engine.Events.NEW_PLAYER, 
-										_.extend(data, Util.parseWebServiceData(response))
-									);
-							}
-						});
 					} else {
 						showErrors();
 					}
@@ -122,9 +122,22 @@
 				
 				save = function(e) {
 					var freightBoat = Game.getFreightBoat(),
-						speedBoats 	= Game.getSpeedBoats();
+						speedBoats 	= Game.getSpeedBoats(),
+						match 		= Game.getMatch(),
+						dataToSave  = Util.parseToSaveMatch(freightBoat, speedBoats, match);
 
+					SocketManager.send(dataToSave);
+				},
 
+				abandon = function(e) {
+					var match = Game.getMatch();
+
+					SocketManager.send(
+							Util.parseToSendWebSocketData(
+								'abandonar',
+								match
+							)
+						);
 				};
 
 			return {
@@ -135,9 +148,10 @@
 					body.on('submit', '[data-action="create"]', create);
 					body.on('submit', '[data-action="join"]', join);
 					body.on('submit', '[data-action="load"]', load);
+					body.on('submit', '[data-action="abandon"]', abandon);
+					body.on('click', '[data-action="save"]', save);
+					
 					body.on('click', '[data-action="back"]', back);
-
-					body.on('save', '[data-action="save"]', save);
 				},
 
 				showModal: showModal,
