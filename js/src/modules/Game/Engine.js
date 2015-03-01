@@ -87,6 +87,7 @@
 				jQuery.pubsub.subscribe('mover', Game.move); // Mover
 				jQuery.pubsub.subscribe('virar', Game.turn); // Virar
 				jQuery.pubsub.subscribe('abandonar', abandon); // Virar
+				jQuery.pubsub.subscribe('fire', Game.fire)
 
 				// jQuery.pubsub.subscribe(Events.SHOT_PLAYER, shoot);
 				// jQuery.pubsub.subscribe(Events.KILL_PLAYER, kill);

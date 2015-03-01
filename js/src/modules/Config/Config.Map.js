@@ -4,8 +4,8 @@
 			/**
 			 * Game starting settings
 			 */
-		var WIDTH 		= 800,
-			HEIGHT 		= 600,
+		var WIDTH 		= 970,
+			HEIGHT 		= 500,
 			RENDER 		= Phaser.AUTO,
 			CONTAINER 	= 'game-container';
 

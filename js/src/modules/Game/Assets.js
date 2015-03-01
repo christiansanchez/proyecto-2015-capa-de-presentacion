@@ -22,8 +22,28 @@
 					file: 'bullet.png'
 				},
 				{
-					tag: 'island',
-					file: 'island.png'
+					tag: 'isla',
+					file: 'isla.png'
+				},
+				{
+					tag: 'costa-izquierda',
+					file: 'costa-izquierda.png'
+				},
+				{
+					tag: 'costa-derecha',
+					file: 'costa-derecha.png'
+				},
+				{
+					tag: 'costa-arriba',
+					file: 'costa-arriba.png'
+				},
+				{
+					tag: 'costa-abajo',
+					file: 'costa-abajo.png'
+				},
+				{
+					tag: 'port',
+					file: 'port.png'
 				}
 
 			];

@@ -6,6 +6,9 @@
 			instance,
 			matchName,
 			match,
+			BarcoRadar = 400,
+			RangoAtaque = BarcoRadar / 2,
+			muelleLlegada,
 
 			counter = 0,
 			path 	= General.getAssetsPath(),
@@ -21,6 +24,30 @@
 			bullets, 
 			island,
 			islandPiece,
+			island,
+			island2,
+			island3,
+			island4,
+			island5,
+			island6,
+			island7,
+			island8,
+			island9,
+			island10,
+			island11,
+			island12,
+			island13,
+			island14,
+			island15,
+
+			costas,
+			costa,
+			costa2,
+			costaDerecha,
+			costaArriba,
+			costaArriba2,
+			costaAbajo,
+			costaAbajo2,
 
 			fireButton,
 			changeCharacterButton,
@@ -34,15 +61,19 @@
 			gameStarted = false,
 			playerData,
 
-			initCurrentlyControlled = function(role) {
+			initCurrentlyControlled = function(role, game) {
 				if(!Config.Player.isFreightBoat(role)) {
 					currentlyControlled = speedBoats.children[0];
 				} else {
 					currentlyControlled = freightBoat;
 				}
+
+				game.camera.follow(currentlyControlled);
 			},
 
 			loadImages = function(game) {
+				game.world.setBounds(0, 0, 3000, 2000);
+
 				var images = Assets.getImages();
 
 				for(image in images) {
@@ -61,27 +92,106 @@
 				map = game.add.group();
 				map.enableBody = true;
 
-				island = game.add.group();
-				islandPiece = island.create(game.world.width / 2, game.world.height / 2, 'island');
-				game.physics.arcade.enable(islandPiece)
-				islandPiece.body.bounce.setTo(0, 0);
-				islandPiece.body.immovable = true;
+				costas = game.add.group();
+				costas.create(0, 190, 'costa-izquierda');
+				costas.create(0, 1200, 'costa-izquierda');
+				costas.create(900, 0, 'costa-arriba');
+				costas.create(1700, 0, 'costa-arriba');
+				costas.create(600, 1820, 'costa-abajo');
+				costas.create(1400, 1820, 'costa-abajo');
+				costas.create(1400, 1820, 'costa-derecha');
+				costas.create(2820, 400, 'costa-derecha');
 				
+				for(var i = 0, coast; coast = costas.children[i]; i++) {
+					game.physics.arcade.enable(coast);
+					coast.body.bounce.setTo(0, 0);
+					coast.body.immovable = true;
+				}
+
+				if(match.tipoMapa == 'ISLAS') {
+					island = game.add.group();
+					//islandPiece = island.create(100, 400, 'isla');
+					//game.physics.arcade.enable(islandPiece)
+					//islandPiece.body.bounce.setTo(0, 0);
+					//islandPiece.body.immovable = true;
+
+					island.create(590, 50, 'isla');
+					island.create(720, 380, 'isla');
+					island.create(1100, 290, 'isla');
+					island.create(1500, 240, 'isla');
+					island.create(300, 720, 'isla');
+					island.create(850, 790, 'isla');
+					island.create(1400, 690, 'isla');
+					island.create(400, 1220, 'isla');
+					island.create(780, 1400, 'isla');
+					island.create(1150, 1100, 'isla');
+					island.create(1350, 1500, 'isla');
+					island.create(2290, 120, 'isla');
+					island.create(1890, 690, 'isla');
+					island.create(2390, 980, 'isla');
+					island.create(1890, 1550, 'isla');
+
+					game.physics.arcade.enable(island);
+
+					for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
+						game.physics.arcade.enable(islandPiece);
+						islandPiece.body.bounce.setTo(0, 0);
+						islandPiece.body.immovable = true;
+					}
+
+					// island = game.add.sprite(590, 50, 'isla');
+					// island2 = game.add.sprite(720, 380, 'isla');
+					// island3 = game.add.sprite(1100, 290, 'isla');
+					// island4 = game.add.sprite(1500, 240, 'isla');
+					
+					// island5 = game.add.sprite(300, 720, 'isla');
+					// island6 = game.add.sprite(850, 790, 'isla');
+					// island7 = game.add.sprite(1400, 690, 'isla');
+					
+					// island8 = game.add.sprite(400, 1220, 'isla');
+					// island9 = game.add.sprite(780, 1400, 'isla');
+					// island10 = game.add.sprite(1150, 1100, 'isla');			
+					// island11 = game.add.sprite(1350, 1500, 'isla');
+					
+					// island12 = game.add.sprite(2290, 120, 'isla');
+					// island13 = game.add.sprite(1890, 690, 'isla');
+					// island14 = game.add.sprite(2390, 980, 'isla');
+					// island15 = game.add.sprite(1890, 1550, 'isla');
+				}
+
+
 			},
 
-			fire = function(game) {
-				//  To avoid them being allowed to fire too fast we set a time limit
-			    if(game.time.now > bulletTime) {
-			        //  Grab the first bullet we can from the pool
-			        bullet = bullets.getFirstExists(false);
+			fire = function(game, data) {
+				var toMove = getToMove(data);
 
-			        if(bullet) {
-			            //  And fire it
-			            bullet.reset(currentlyControlled.x, currentlyControlled.y + 8);
-			            //bullet.body.velocity.y = -400;
-			            game.physics.arcade.velocityFromAngle(currentlyControlled.angle + 90, 300, bullet.body.velocity);
-			            bulletTime = game.time.now + 200;
-			        }
+				//  To avoid them being allowed to fire too fast we set a time limit
+				if(toMove.id == 'freightboat') {
+				    if(game.time.now > bulletTime) {
+				        //  Grab the first bullet we can from the pool
+				        bullet = bullets.getFirstExists(false);
+
+				        if(bullet) {
+				            //  And fire it
+				            bullet.reset(toMove.x, toMove.y + 8);
+				            //bullet.body.velocity.y = -400;
+				            game.physics.arcade.velocityFromAngle(toMove.angle + 90, 300, bullet.body.velocity);
+				            bulletTime = game.time.now + 200;
+				        }
+				    }
+			    } else {
+			    	if(game.time.now > bulletTime) {
+				        //  Grab the first bullet we can from the pool
+				        bullet = bullets.getFirstExists(false);
+
+				        if(bullet) {
+				            //  And fire it
+				            bullet.reset(toMove.x + 40, toMove.y + 22);
+				            //bullet.body.velocity.y = -400;
+				            game.physics.arcade.velocityFromAngle(toMove.angle, 300, bullet.body.velocity);
+				            bulletTime = game.time.now + 200;
+				        }
+				    }
 			    }
 
 			},
@@ -128,7 +238,6 @@
 			    freightBoat.index = 0;
 			    freightBoat.id = 'freightboat';
 
-			    currentlyControlled = freightBoat;
 			    cursors = game.input.keyboard.createCursorKeys();
 			},
 
@@ -229,7 +338,7 @@
 			getToMove = function(data) {
 				var toMove;
 
-				if(data.id && data.index) {
+				if(data && data.id && data.index) {
 					if(data.id == 'speedboat') {
 						toMove = speedBoats.children[data.index];
 					} else {
@@ -244,7 +353,7 @@
 
 			turn = function(data) {
 				var toTurn = getToMove(data);
-				toTurn.body.angularVelocity = data.forward ? 200 : -200;
+				toTurn.body.angularVelocity = data.forward == 'true'? 200 : -200;
 			},
 
 			move = function(game, data) {
@@ -252,13 +361,66 @@
 
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
-					data.forward ? 300 : -1 * 300, 
+					data.forward == 'true' ? 300 : (-1 * 300),
 					toMove.body.velocity
 				);
 			},
 
 			changeCharacter = function(game) {
 				
+			},
+
+			distanciaEntreSprites = function(obj1, obj2, game) {		
+				if (game.physics.arcade.distanceBetween(obj1,obj2) < 560 && game.physics.arcade.distanceBetween(obj1,obj2) > 540){
+					obj2.alpha = 0.1;				
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 540 && game.physics.arcade.distanceBetween(obj1,obj2) > 520){
+					obj2.alpha = 0.2;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 520 && game.physics.arcade.distanceBetween(obj1,obj2) > 500){
+					obj2.alpha = 0.3;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 500 && game.physics.arcade.distanceBetween(obj1,obj2) > 480){
+					obj2.alpha = 0.4;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 480 && game.physics.arcade.distanceBetween(obj1,obj2) > 460){
+					obj2.alpha = 0.5;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 460 && game.physics.arcade.distanceBetween(obj1,obj2) > 440){
+					obj2.alpha = 0.6;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 440 && game.physics.arcade.distanceBetween(obj1,obj2) > 420){
+					obj2.alpha = 0.7;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 420 && game.physics.arcade.distanceBetween(obj1,obj2) > 400){
+					obj2.alpha = 0.8;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 410 && game.physics.arcade.distanceBetween(obj1,obj2) > 400){
+					obj2.alpha = 0.9;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) < 400){
+					obj2.alpha = 1.0;
+				} else if (game.physics.arcade.distanceBetween(obj1,obj2) > 560){
+					obj2.alpha = 0.0;
+				}
+			
+			},
+
+			distanciaBarcoLanchas = function(obj1, obj2, game) {
+				//solo si no hundimos la lancha (obj2)
+				if(obj2.exists){	
+
+					//radar barco
+					if (game.physics.arcade.distanceBetween(obj1,obj2) < BarcoRadar && game.physics.arcade.distanceBetween(obj1,obj2) > RangoAtaque) { 
+						obj2.alpha = 0.3;
+						//lo ve y puede atacar
+					}else if (game.physics.arcade.distanceBetween(obj1,obj2) < RangoAtaque){
+						obj2.alpha = 1.0;				
+						//no lo ve
+					} else if (game.physics.arcade.distanceBetween(obj1, speedBoats.children[0]) > BarcoRadar
+						&&
+						game.physics.arcade.distanceBetween(obj1, speedBoats.children[1]) > BarcoRadar
+						&&
+						game.physics.arcade.distanceBetween(obj1, speedBoats.children[2]) > BarcoRadar
+						){
+							obj2.alpha = 0.0;
+					}						
+				}
+			},
+
+			handleArrival = function(muelle, freightBoat) {
+				// Terminar partida
 			};
 
 		return {
@@ -303,7 +465,13 @@
 				initBullets(game);
 				addActions(game);
 
-				initCurrentlyControlled(Engine.getRole());
+				muelleLlegada = game.add.sprite(2880, game.rnd.integerInRange(900, 1950), 'port');
+				game.physics.arcade.enable(muelleLlegada);
+				muelleLlegada.body.bounce.setTo(0, 0);
+				muelleLlegada.body.immovable = true;
+
+				game.physics.arcade.enable(muelleLlegada);
+				initCurrentlyControlled(Engine.getRole(), game);
 			},
 
 			update: function(game) {
@@ -315,8 +483,23 @@
 
 			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 			    game.physics.arcade.overlap(bullets, speedBoats, fireHandler, null, this);
-			    game.physics.arcade.collide(freightBoats, islandPiece);
-			    game.physics.arcade.collide(speedBoats, islandPiece);
+			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
+
+			    game.physics.arcade.collide(costas, speedBoats);
+			    game.physics.arcade.collide(costas, freightBoat);
+
+			    distanciaBarcoLanchas(freightBoat, speedBoats.children[0], game);
+			    distanciaBarcoLanchas(freightBoat, speedBoats.children[1], game);
+			    distanciaBarcoLanchas(freightBoat, speedBoats.children[2], game);
+
+			    if(match.tipoMapa == 'ISLAS') {
+				    for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
+				    	distanciaEntreSprites(currentlyControlled, islandPiece, game);
+				    }
+
+				    game.physics.arcade.collide(freightBoats, island);
+			    	game.physics.arcade.collide(speedBoats, island);
+			    }
 
 			    /**
 			     * To turn the boat around
@@ -403,15 +586,18 @@
 			    }
 
 			    if(fireButton.isDown) {
-			    	//fire(game, currentlyControlled);
-			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
-			    		turn: 'right'
-			    	}))*/
+			    	fire(game, currentlyControlled);
+			    	SocketManager.send('requestAction:dibujar;' + JSON.stringify({
+			    		evt: 'fire',
+			    		id: currentlyControlled.id,
+			    		index: currentlyControlled.index,
+			    		nombrePartida: matchName
+			    	}))
 			    }
 
 			    if(changeCharacterButton.isDown) {
-			    	//changeCharacter(game, changeCharacterButton);
-			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
+			    	/*changeCharacter(game, changeCharacterButton);
+			    	SocketManager.send('requestAction:dibujar;' + JSON.stringify({
 			    		turn: 'right'
 			    	}))*/
 			    }
@@ -450,7 +636,8 @@
 			},
 
 			move: move,
-			turn: turn
+			turn: turn,
+			fire: fire
 		} 
 
 	})();
