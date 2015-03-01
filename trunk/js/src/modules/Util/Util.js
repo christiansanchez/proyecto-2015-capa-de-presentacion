@@ -115,7 +115,23 @@
 
 			},
 
-			parseToObject: parseToObject
+			parseToObject: parseToObject,
+
+			removeOwnMatches: function(data, ownData) {
+				var newData = [];
+
+				for(var i = 0, match; match = ownData[i]; i++) {
+					var name = match.nombrePartida;
+
+					for(var x = 0, match2; match2 = data[x]; x++) {
+						if(match2.nombrePartida != name) {
+							newData.push(match2);
+						}
+					}
+				}
+
+				return newData;
+			}
 		}
 
 	})();

@@ -24,6 +24,10 @@
 				},*/
 
 				showModal = function(evt, data) {
+					if(evt == Methods.getGetJoinMethod()) {
+						data = Util.removeOwnMatches(data, Matches.getMatches());
+					}
+
 					$.modal(
 							Templates.compileTemplate(
 								evt,
@@ -63,15 +67,11 @@
 					var data = $(e.target).serializeForm();
 
 					if(Validation.validate(data, Engine.Events.CREATE)) {
-
+						Matches.addMatch(data);
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
 								SocketManager.Methods.getCreateMethod(),
-								{
-									nombrePartida: data.nombrePartida,
-									rolPartida: data.rolPartida,
-									tipoMapa: data.tipoMapa
-								}	
+								data	
 							)
 						);
 					} else {
@@ -81,20 +81,16 @@
 
 				join = function(e) {
 					var data = $(e.target).serializeForm();
-					data = Util.parseToObject(data.nombrePartida);
+					data = Util.parseToObject(data.nombrePartida)[0];
 
-					if(!Matches.getMatch(data[0].nombrePartida)) {
-						Matches.addMatch(data[0]);
-					}
-
-					if(Validation.validate(data[0], Engine.Events.JOIN)) {
+					if(Validation.validate(data, Engine.Events.JOIN)) {
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
 								SocketManager.Methods.getJoinMethod(),
 								{
-									nombrePartida: data[0].nombrePartida,
-									rolPartida: data[0].rolPartida,
-									tipoMapa: data[0].tipoMapa,
+									nombrePartida: data.nombrePartida,
+									rolPartida: data.rolPartida,
+									tipoMapa: data.tipoMapa,
 									type: 'speedBoat'
 								}	
 							)
@@ -175,4 +171,4 @@
 
 		})();
 
-})(jQuery, document, window, Menu.Actions, Templates, Menu.Validation, Gateway, Gateway.Methods, window.Util);
+})(jQuery, document, window, Menu.Actions, Templates, Menu.Validation, Gateway, SocketManager.Methods, window.Util);

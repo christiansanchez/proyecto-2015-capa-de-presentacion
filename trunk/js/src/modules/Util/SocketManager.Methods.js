@@ -8,7 +8,7 @@
 			GET_JOIN 	= 'getUnirsePartida',
 			JOIN 		= 'unirse',
 			GET_LOAD 	= 'getCargarPartida',
-			SET_JOIN 	= 'setCargarPartida',
+			SET_LOAD	= 'setCargarPartida',
 			SHOOT 		= 'disparar',
 			KILL 		= 'matar',
 			ARRIVE 		= 'llegar';
@@ -32,7 +32,7 @@
 			},
 
 			getLoadMethod: function() {
-				return LOAD;
+				return SET_LOAD;
 			},
 
 			getShootMethod: function() {
