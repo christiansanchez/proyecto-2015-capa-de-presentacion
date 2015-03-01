@@ -7,15 +7,6 @@
 			socketCounter = 0,
 
 			bindEvents = function() {
-
-				ws.onopen = function(evt) {
-					console.debug('evt: ', evt);
-					/**
-					 * Not sure how this should be handled
-					 */
-					//pubsub.publish(Engine.evts.NEW_PLAYER, Util.parseWebSocketData(evt.data))
-				};
-
 				ws.onclose = function(evt) {
 					ws.send(evt.data);
 				};

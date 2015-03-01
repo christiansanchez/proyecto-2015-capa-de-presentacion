@@ -92,10 +92,10 @@
 					obj['manguera' + i] = true;
 				}
 
-				var deadHose = Config.Boat.getDefaultConfig().stamina - i;
+				var deadHose = Config.Boat.getDefaultConfig().stamina - (i - 1);
 
 				if(deadHose > 0) {
-					for(; i <= deadHose; i++) {
+					for(i = i - 1; i <= deadHose; i++) {
 						obj['manguera' + i] = false;
 					}
 				}
