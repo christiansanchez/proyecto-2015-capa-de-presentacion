@@ -14,6 +14,15 @@
 	padding: 10px;
 }
 
+.header {
+	margin-bottom: 15px;
+}
+
+.header h3 {
+	line-height: 20px;
+	padding-bottom: 10px;
+}
+
 /** Modal Styles */
 .simplemodal-overlay {
 	background: #d5d5d5;
@@ -23,4 +32,9 @@
 	background: #fff;
 	border-radius: 3px;
 	width: 50%;
+}
+
+@media (min-width: 768px)
+.container {
+	max-width: 1000px !important;
 }

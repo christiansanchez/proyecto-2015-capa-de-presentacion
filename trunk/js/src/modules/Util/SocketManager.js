@@ -7,6 +7,11 @@
 			socketCounter = 0,
 
 			bindEvents = function() {
+
+				ws.open = function(evt) {
+					console.log('socket opened: ', evt);
+				};
+
 				ws.onclose = function(evt) {
 					ws.send(evt.data);
 				};

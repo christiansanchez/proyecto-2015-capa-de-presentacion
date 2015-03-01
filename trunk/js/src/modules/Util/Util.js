@@ -82,8 +82,8 @@
 
 			parseToSaveMatch: function(freightBoat, speedBoats, match) {
 				var obj = _.extend(match, {
-						posicionBarcoX: freightBoat.position.x,
-						posicionBarcoY: freightBoat.position.y,
+						posicionBarcoX: freightBoat.position.x.toFixed(2),
+						posicionBarcoY: freightBoat.position.y.toFixed(2),
 						anguloBarco: freightBoat.angle
 					}),
 					speedBoatsInfo = speedBoats.children;
@@ -105,8 +105,8 @@
 				 * Data speedBoats
 				 */
 				for(var i = 0, speedBoat; speedBoat = speedBoatsInfo[i]; i++) {
-					obj['posicionXLancha' + (i + 1)] = speedBoat.position.x;
-					obj['posicionYLancha' + (i + 1)] = speedBoat.position.y;
+					obj['posicionXLancha' + (i + 1)] = speedBoat.position.x.toFixed(2);
+					obj['posicionYLancha' + (i + 1)] = speedBoat.position.y.toFixed(2);
 					obj['energiaLancha' + (i + 1)] = speedBoat.health;
 					obj['anguloLancha' + (i + 1)] = speedBoat.angle;
 				}
@@ -120,10 +120,9 @@
 			removeOwnMatches: function(data, ownData) {
 				var newData = [];
 
-				for(var i = 0, match; match = ownData[i]; i++) {
-					var name = match.nombrePartida;
-
-					for(var x = 0, match2; match2 = data[x]; x++) {
+				for(var x = 0, match2; match2 = data[x]; x++) {
+					for(match in ownData) {
+						var name = ownData[match].nombrePartida;
 						if(match2.nombrePartida != name) {
 							newData.push(match2);
 						}

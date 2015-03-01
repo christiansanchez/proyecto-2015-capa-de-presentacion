@@ -25,7 +25,11 @@
 
 				showModal = function(evt, data) {
 					if(evt == Methods.getGetJoinMethod()) {
-						data = Util.removeOwnMatches(data, Matches.getMatches());
+						var currentMatches = Matches.getMatches();
+
+						if(currentMatches && !_.isEmpty(currentMatches)) {
+							data = Util.removeOwnMatches(data, currentMatches);
+						}
 					}
 
 					$.modal(
