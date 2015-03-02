@@ -21,7 +21,8 @@
 			speedBoats,
 			cannons,
 			cursors,
-			bullets, 
+			bulletsFreightBoat,
+			bulletsSpeedBoat, 
 			island,
 			islandPiece,
 			island,
@@ -175,6 +176,7 @@
 				            //  And fire it
 				            bullet.reset(toMove.x, toMove.y + 8);
 				            //bullet.body.velocity.y = -400;
+				            bullet.lifeSpan = RangoAtaque;
 				            game.physics.arcade.velocityFromAngle(toMove.angle + 90, 300, bullet.body.velocity);
 				            bulletTime = game.time.now + 200;
 				        }
@@ -187,6 +189,7 @@
 				        if(bullet) {
 				            //  And fire it
 				            bullet.reset(toMove.x + 40, toMove.y + 22);
+				            bullet.lifeSpan = RangoAtaque;
 				            //bullet.body.velocity.y = -400;
 				            game.physics.arcade.velocityFromAngle(toMove.angle, 300, bullet.body.velocity);
 				            bulletTime = game.time.now + 200;
@@ -280,12 +283,28 @@
 			initBullets = function(game) {
 				var bulletQty = Player.getBullets();
 
-				bullets = game.add.group();
-			    bullets.enableBody = true;
-			    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+				bulletsFreightBoat = game.add.group();
+			    bulletsFreightBoat.enableBody = true;
+			    bulletsFreightBoat.physicsBodyType = Phaser.Physics.ARCADE;
 
 			    for(var i = 0; i < bulletQty; i++) {
-				    var currentBullet = bullets.create(-20, -20, 'bullet');
+				    var currentBullet = bulletsFreightBoat.create(-20, -20, 'bullet');
+
+				    currentBullet.anchor.x = 0.5;
+				    currentBullet.anchor.y = 0.5;
+				    currentBullet.outOfBoundsKill = true;
+				    currentBullet.checkWorldBounds = true;
+				    currentBullet.angle = game.rnd.angle();
+				    
+				    game.physics.arcade.enable(currentBullet);
+			    }
+
+			    bulletsSpeedBoat = game.add.group();
+			    bulletsSpeedBoat.enableBody = true;
+			    bulletsSpeedBoat.physicsBodyType = Phaser.Physics.ARCADE;
+
+			    for(var i = 0; i < bulletQty; i++) {
+				    var currentBullet = bulletsSpeedBoat.create(-20, -20, 'bullet');
 
 				    currentBullet.anchor.x = 0.5;
 				    currentBullet.anchor.y = 0.5;
@@ -482,7 +501,8 @@
 			    currentlyControlled.body.angularVelocity = 0;
 
 			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
-			    game.physics.arcade.overlap(bullets, speedBoats, fireHandler, null, this);
+			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
+			    game.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
 
 			    game.physics.arcade.collide(costas, speedBoats);

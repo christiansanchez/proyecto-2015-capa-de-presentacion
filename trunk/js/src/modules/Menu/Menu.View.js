@@ -85,7 +85,7 @@
 
 				join = function(e) {
 					var data = $(e.target).serializeForm();
-					data = Util.parseToObject(data.nombrePartida)[0];
+					data = Util.parseToObject([data.nombrePartida])[0];
 
 					if(Validation.validate(data, Engine.Events.JOIN)) {
 						SocketManager.send(
@@ -140,9 +140,9 @@
 
 					/**
 					 * For the case when the user creates a match and then
-					 * click on "Cancelar"
+					 * clicks on "Cancelar"
 					 */
-					if(match) {
+					if(!match) {
 						match = Matches.getMatches()[0];
 					}
 
