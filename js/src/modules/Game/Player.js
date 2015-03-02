@@ -2,7 +2,7 @@
 
 	window.Player = function(options) {
 
-		var type = options.type || (options.rolPartida == 'BARCOCARGUERO' ? 'freightBoat' : 'speedBoat'),
+		var type = (options.type == 'freightboat') || (options.rolPartida == 'BARCOCARGUERO') ? 'freightBoat' : 'speedBoat',
 			isFreightBoat = PlayerConfig.isFreightBoat(type),
 			boats = [],
 			sprite,

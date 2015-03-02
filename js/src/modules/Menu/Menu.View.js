@@ -91,12 +91,9 @@
 						SocketManager.send(
 							Util.parseToSendWebSocketData(
 								SocketManager.Methods.getJoinMethod(),
-								{
-									nombrePartida: data.nombrePartida,
-									rolPartida: data.rolPartida,
-									tipoMapa: data.tipoMapa,
+								_.extend(data, {
 									type: 'speedBoat'
-								}	
+								})
 							)
 						);
 					} else {
@@ -106,12 +103,15 @@
 
 				load = function(e) {
 					var data = $(e.target).serializeForm();
+					data = Util.parseToObject([data.nombrePartida])[0];
 
 					if(Validation.validate(data, Engine.Events.LOAD)) {
 						SocketManager.send(
 								Util.parseToSendWebSocketData(
 									Methods.getLoadMethod(),
-									data
+									_.extend(data, {
+										type: 'freightboat'
+									})
 								)
 							);
 

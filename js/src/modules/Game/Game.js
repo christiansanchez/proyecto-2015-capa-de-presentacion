@@ -109,7 +109,7 @@
 					coast.body.immovable = true;
 				}
 
-				if(match.tipoMapa == 'ISLAS') {
+				if(match.tipoMapa == 'ISLAS' || match.match.tipoMapa == 'ISLAS') {
 					island = game.add.group();
 					//islandPiece = island.create(100, 400, 'isla');
 					//game.physics.arcade.enable(islandPiece)
@@ -226,11 +226,17 @@
 				freightBoats = game.add.group();
 				freightBoats.name = 'freightboats';
 
-				freightBoat = freightBoats.create(50, 0, players.freightBoat.sprite)
+				freightBoat = match.freightBoat ?
+								freightBoats.create(match.freightBoat.x, match.freightBoat.y, players.freightBoat.sprite) :
+								freightBoats.create(50, 0, players.freightBoat.sprite);
 				freightBoat.anchor.setTo(0.5, 0.5);
 				freightBoat.angle = game.rnd.angle();
-				freightBoat.angle = 90;
-				freightBoat.health = Config.Boat.getDefaultConfig().stamina;
+				freightBoat.angle = match.freightBoat ?
+										match.freightBoat.angle :
+										90;
+				freightBoat.health = match.freightBoat ? 
+										match.freightBoat.health : 
+										Config.Boat.getDefaultConfig().stamina;
 
 				game.physics.arcade.enable(freightBoat);
 
@@ -249,12 +255,19 @@
 					health = Config.Boat.getSpeedBoatConfig().stamina;
 
 				for(var i = 0; i < players.speedBoat.qty; i++) {
-					var speedBoat = speedBoats.create(separationCoef, 0, players.speedBoat.sprite);
-					speedBoat.health = health;
+					var currentSpedBoatData = match.speedBoats ? match.speedBoats[i] : null,
+						speedBoat = speedBoats.create(
+										currentSpedBoatData ? currentSpedBoatData.x : separationCoef, 
+										currentSpedBoatData ? currentSpedBoatData.y : 0, 
+										players.speedBoat.sprite
+									);
+						
+
+					speedBoat.health = currentSpedBoatData ? currentSpedBoatData.health : health;
 
 					speedBoat.anchor.setTo(0.5, 0.5)
 					speedBoat.angle = game.rnd.angle();
-					speedBoat.angle = 90;
+					speedBoat.angle = currentSpedBoatData ? currentSpedBoatData.angle : 90;
 					speedBoat.index = i;
 					speedBoat.id = 'speedboat';
 
@@ -467,7 +480,10 @@
 
 					playerData = data;
 					matchName = data.nombrePartida;
-					match = data;
+
+					if(!match) {
+						match = data;
+					}
 				}
 			},
 
@@ -657,7 +673,69 @@
 
 			move: move,
 			turn: turn,
-			fire: fire
+			fire: fire,
+
+			setMatchData: function(data) {
+				var hoseCounter = 0,
+					dataSpeedBoats = [{}, {}, {}],
+					dataFreightBoat = {
+						hoses: [false, false, false, false, false, false, false, false],
+						x: 0,
+						y: 0,
+						health: 0,
+						angle: 0
+					},
+					matchData = {};
+
+				for(var i = 0, obj; obj = data[i]; i++) {
+					for(attr in obj) {
+
+						if(~attr.indexOf('manguera')) {
+							var hoseNumber = attr.split('manguera')[1],
+								availability = obj[attr];
+							
+							dataFreightBoat.hoses[hoseNumber - 1] = availability;
+							hoseCounter++;
+
+						} else if(~attr.indexOf('posicion')) {
+							if(~attr.indexOf('Barco')) {
+								if(~attr.indexOf('X')) {
+									dataFreightBoat.x = obj[attr];
+								} else {
+									dataFreightBoat.y = obj[attr];
+								}
+							} else if(~attr.indexOf('Lancha')) {
+								var positionValue 	= attr.split('Lancha'),
+									coordinate 		= ~positionValue[0].indexOf('X') ? 'x' : 'y';
+
+								dataSpeedBoats[parseInt(positionValue[1]) - 1][coordinate] = obj[attr];
+							}
+						} else if(~attr.indexOf('angulo')) {
+							if(~attr.indexOf('Barco')) {
+								dataFreightBoat.angle = obj[attr]; 
+							} else if(~attr.indexOf('Lancha')) {
+								var positionValue = attr.split('Lancha');
+								dataSpeedBoats[parseInt(positionValue[1]) - 1].angle = obj[attr];
+							}
+						} else if(~attr.indexOf('energia')) {
+							var positionValue = attr.split('Lancha');
+							dataSpeedBoats[parseInt(positionValue[1]) - 1].health = obj[attr];
+						} else {
+							matchData[attr] = obj[attr];
+						}
+					}
+				}
+
+				dataFreightBoat.health = hoseCounter;
+
+				match = {
+					speedBoats: dataSpeedBoats,
+					freightBoat: dataFreightBoat,
+					match: matchData
+				}
+
+				return match;
+			}
 		} 
 
 	})();

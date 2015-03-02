@@ -22,6 +22,9 @@
 
 					if(data.evt == 'dibujar') {
 						pubsub.publish(data.data[0].evt, data.data[0]);
+					} else if(data.evt == 'setCargarPartida') {
+						var loadedMatch = Game.setMatchData(data.data);
+						pubsub.publish(data.evt, loadedMatch.match);
 					} else {
 						pubsub.publish(data.evt, data.data);
 					}

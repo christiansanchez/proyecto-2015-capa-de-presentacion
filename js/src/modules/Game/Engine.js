@@ -15,7 +15,7 @@
 			},
 
 			newPlayer = function(evt, data) {
-				data = _.isArray ? data[0] : data;
+				data = _.isArray(data) ? data[0] : data;
 
 				var match = Matches.getMatch(data.nombrePartida);
 
@@ -83,6 +83,7 @@
 
 				jQuery.pubsub.subscribe('getUnirsePartida', Menu.View.showModal); // Elegir partida a unirse
 				jQuery.pubsub.subscribe('getCargarPartida', Menu.View.showModal); // Elegir partida a unirse
+				jQuery.pubsub.subscribe('setCargarPartida', newPlayer); // Elegir partida a unirse
 
 				jQuery.pubsub.subscribe('mover', Game.move); // Mover
 				jQuery.pubsub.subscribe('virar', Game.turn); // Virar
