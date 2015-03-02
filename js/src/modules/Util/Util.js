@@ -21,7 +21,8 @@
 			ATTR_SEPARATOR 		= ',',
 
 			parseToObject = function(data) {
-				return _.map(data.split(OBJECT_SEPARATOR), function(obj) {
+				return _.map(_.isArray(data) ? data : data.split(OBJECT_SEPARATOR), function(obj) {
+						obj = removeResult(obj);
 						return JSON.parse(OBJECT_WRAPPER.replace(DATA_PLACEHOLDER, obj));
 					});
 			},
@@ -30,16 +31,36 @@
 				var str 	= '',
 					counter = 0;
 
-				for(attr in data) {
-					if(counter) {
-						str += ATTR_SEPARATOR;
-					}
+				data = _.isArray(data) ? data : [data];
 
-					str += '"' + attr + '"' + KEY_ATTR_SEPARATOR + '"' + data[attr] + '"';
-					counter++;
+				for(var i = 0, obj; obj = data[i]; i++) {
+					for(attr in obj) {
+						if(counter) {
+							str += ATTR_SEPARATOR;
+						}
+
+						str += '"' + attr + '"' + KEY_ATTR_SEPARATOR + '"' + unescape(obj[attr]) + '"';
+						counter++;
+					}
 				}
 
 				return str;
+			},
+
+			removeResult = function(str) {
+				var newStr = str;
+
+				if(str.indexOf('"result":true') != -1) {
+					newStr = str.replace('"result":true,', '');
+				} else if(str.indexOf('"result":false,') != -1) {
+					newStr = str.replace('"result":false,', '');
+				} else if(str.indexOf('"result":,') != -1) {
+					newStr = str.replace('"result":,', '');
+				} else if(str.indexOf('"result":"n') != -1 || str.indexOf('"result":,') != -1) {
+					newStr = str.replace('"result":', '');
+				}
+
+				return newStr;
 			};
 
 		return {
@@ -56,17 +77,8 @@
 				var arr = data.split(';'),
 					action = arr[0].split('responseAction:')[1];
 
-				if(arr[1].indexOf('"result":true') != -1) {
-					arr[1] = arr[1].replace('"result":true,', '');
-				} else if(arr[1].indexOf('"result":false,') != -1) {
-					arr[1] = arr[1].replace('"result":false,', '');
-				} else if(arr[1].indexOf('"result":,') != -1) {
-					arr[1] = arr[1].replace('"result":,', '');
-				} else if(arr[1].indexOf('"result":"n') != -1 || arr[1].indexOf('"result":,') != -1) {
-					arr[1] = arr[1].replace('"result":', '');
-				}
-
-				var matchData = parseToObject(unescape(arr[1]));
+				arr[1] = removeResult(arr[1]);
+				var matchData = arr.length && arr.length < 2 ? [] : parseToObject(arr.slice(1));
 
 				return {
 					evt: action, 
@@ -84,7 +96,7 @@
 				var obj = _.extend(match, {
 						posicionBarcoX: freightBoat.position.x.toFixed(2),
 						posicionBarcoY: freightBoat.position.y.toFixed(2),
-						anguloBarco: freightBoat.angle
+						anguloBarco: parseInt(freightBoat.angle)
 					}),
 					speedBoatsInfo = speedBoats.children;
 
@@ -108,7 +120,7 @@
 					obj['posicionXLancha' + (i + 1)] = speedBoat.position.x.toFixed(2);
 					obj['posicionYLancha' + (i + 1)] = speedBoat.position.y.toFixed(2);
 					obj['energiaLancha' + (i + 1)] = speedBoat.health;
-					obj['anguloLancha' + (i + 1)] = speedBoat.angle;
+					obj['anguloLancha' + (i + 1)] = parseInt(speedBoat.angle);
 				}
 
 				return this.parseToSendWebSocketData('guardar', obj);
