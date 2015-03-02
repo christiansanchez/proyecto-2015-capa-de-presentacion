@@ -56,7 +56,9 @@
 					newStr = str.replace('"result":false,', '');
 				} else if(str.indexOf('"result":,') != -1) {
 					newStr = str.replace('"result":,', '');
-				} else if(str.indexOf('"result":"n') != -1 || str.indexOf('"result":,') != -1) {
+				} else if(str.indexOf('"result":"n') != -1 || 
+					str.indexOf('"result":,') != -1 || 
+					str.indexOf('"result":"manguera') != -1) {
 					newStr = str.replace('"result":', '');
 				}
 
