@@ -18,10 +18,15 @@
 
 				ws.onmessage = function(evt) {
 					var data = Util.parseWebSocketData(evt.data);
-					console.log('socketCounter: ', socketCounter++);
 
 					if(data.evt == 'dibujar') {
-						pubsub.publish(data.data[0].evt, data.data[0]);
+						Game.updateBoat(data.data[0]);
+						/*if(data.data[0].evt == 'mover') {
+							Game.move(data.data[0]);
+						} else if(data.data[0].evt == 'virar') {
+							Game.turn(null, data.data[0]);
+						}*/
+						//pubsub.publish(data.data[0].evt, data.data[0]);
 					} else if(data.evt == 'setCargarPartida') {
 						var loadedMatch = Game.setMatchData(data.data);
 						pubsub.publish(data.evt, loadedMatch.match);

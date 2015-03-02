@@ -13,17 +13,10 @@
 				IMAGE: 'image'
 			},
 
-			HOST		= '127.0.0.1:',
-			PORT 		= '8080',
-			SOCKET_PORT	= '80',
-			SERVICE_URL = 'http://' + HOST + PORT + '/axis2/services/wservicejuego/',
-			//SOCKET_URL 	= 'ws://' + HOST + '/servidor/wsocketjuego';
-			SOCKET_URL	= 'ws://'+ HOST + PORT + '/servidor/wsocketjuego';
-			
-			HOST		= 'localhost:8080',
+			HOST		= document.location.host,
 			SERVICE_URL = 'http://' + HOST + '/axis2/services/wservicejuego/',
 			//SOCKET_URL 	= 'ws://' + HOST + '/servidor/wsocketjuego';
-			SOCKET_URL	= 'ws://127.0.0.1:8080/servidor/wsocketjuego';
+			SOCKET_URL	= 'ws://'+ HOST + '/servidor/wsocketjuego';
 
 		return {
 			
