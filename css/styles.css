@@ -19,8 +19,12 @@
 }
 
 .header h3 {
-	line-height: 20px;
+	line-height: 30px;
 	padding-bottom: 10px;
+}
+
+.navbar-btn {
+	margin-top: 0px;
 }
 
 /** Modal Styles */

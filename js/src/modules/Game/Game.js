@@ -26,7 +26,6 @@
 			bulletsSpeedBoat, 
 			island,
 			islandPiece,
-			island,
 			island2,
 			island3,
 			island4,
@@ -110,7 +109,7 @@
 					coast.body.immovable = true;
 				}
 
-				if(match.tipoMapa == 'ISLAS' || match.match.tipoMapa == 'ISLAS') {
+				if(match.tipoMapa == 'ISLAS' || (match.match && match.match.tipoMapa == 'ISLAS')) {
 					island = game.add.group();
 					//islandPiece = island.create(100, 400, 'isla');
 					//game.physics.arcade.enable(islandPiece)
@@ -244,23 +243,22 @@
 			},
 
 			addSpeedBoats = function(game, speedBoats) {
-				var separationCoef = 200,
+				var separationCoef = 0,
 					health = Config.Boat.getSpeedBoatConfig().stamina;
 
 				for(var i = 0; i < players.speedBoat.qty; i++) {
 					var currentSpedBoatData = match.speedBoats ? match.speedBoats[i] : null,
 						speedBoat = speedBoats.create(
-										currentSpedBoatData ? currentSpedBoatData.x : separationCoef, 
-										currentSpedBoatData ? currentSpedBoatData.y : 0, 
+										currentSpedBoatData ? currentSpedBoatData.x : 1450 + separationCoef, 
+										currentSpedBoatData ? currentSpedBoatData.y : 1811, 
 										players.speedBoat.sprite
 									);
 						
-
 					speedBoat.health = currentSpedBoatData ? currentSpedBoatData.health : health;
 
 					speedBoat.anchor.setTo(0.5, 0.5)
 					speedBoat.angle = game.rnd.angle();
-					speedBoat.angle = currentSpedBoatData ? currentSpedBoatData.angle : 90;
+					speedBoat.angle = currentSpedBoatData ? currentSpedBoatData.angle : -90;
 					speedBoat.index = i;
 					speedBoat.id = 'speedboat';
 
@@ -271,7 +269,7 @@
 				    speedBoat.body.collideWorldBounds = true;
 				    speedBoat.body.drag.set(0.2);
 
-					separationCoef += 100;
+					separationCoef += 200;
 				}
 
 				return speedBoats;
@@ -384,7 +382,6 @@
 			move = function(data) {
 				var toMove = getToMove(data);
 
-				console.log('gets here for the  ' + (counter++) + ': ', data);
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
 					data.forward == 'true' || data.forward == true ? 300 : (-1 * 300),
@@ -467,7 +464,7 @@
 			},
 
 			handleArrival = function(muelle, freightBoat) {
-				// Terminar partida
+				
 			};
 
 		return {
@@ -492,6 +489,7 @@
 
 					$('#menu-container').addClass('hidden');
 					$('#game-wrapper').removeClass('hidden');
+					$('[data-action="save"], [data-action="abandon"]').removeClass('hidden');
 
 					playerData = data;
 					matchName = data.nombrePartida;
@@ -530,13 +528,27 @@
 				shoot = false;
 				change = false;
 
-			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
+			    //game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
 
 			    game.physics.arcade.collide(costas, speedBoats);
 			    game.physics.arcade.collide(costas, freightBoat);
+
+			    /*if(currentlyControlled.body.touching.up ||
+			    	currentlyControlled.body.touching.down || 
+			    	currentlyControlled.body.touching.left ||
+			    	currentlyControlled.body.touching.right) {
+			    	console.log('is touching!', currentlyControlled.body.touching);
+			    }
+
+			    if(currentlyControlled.body.blocked.up || 
+			    	currentlyControlled.body.blocked.down || 
+			    	currentlyControlled.body.blocked.left || 
+			    	currentlyControlled.body.blocked.right) {
+			    	console.log('is blocked!', currentlyControlled.body.blocked);
+			    }*/
 
 			    if(currentlyControlled.id == 'freightboat') {
 				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[0], game);
@@ -546,7 +558,7 @@
 			    	distanciaLanchaBarco(currentlyControlled, freightBoat, game);
 			    }
 
-			    if(match.tipoMapa == 'ISLAS') {
+			    if(match.tipoMapa == 'ISLAS' || (match.match && match.match.tipoMapa == 'ISLAS')) {
 				    for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
 				    	distanciaEntreSprites(currentlyControlled, islandPiece, game);
 				    }
@@ -587,7 +599,7 @@
 				    }
 				    somethingHapenned = true;
 
-			    } else if(cursors.down.isDown) {
+			    } else if(currentlyControlled.id == 'freightboat' && cursors.down.isDown) {
 			    	motionData = {
 			    		forward: false
 			    	};
