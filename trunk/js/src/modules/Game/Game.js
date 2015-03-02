@@ -385,7 +385,7 @@
 
 			turn = function(data) {
 				var toTurn = getToMove(data);
-				toTurn.body.angularVelocity = data.forward == 'true'? 200 : -200;
+				toTurn.body.angularVelocity = data.forward == 'true' || data.forward == true ? 200 : -200;
 			},
 
 			move = function(game, data) {
@@ -393,7 +393,7 @@
 
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
-					data.forward == 'true' ? 300 : (-1 * 300),
+					data.forward == 'true' || data.forward == true ? 300 : (-1 * 300),
 					toMove.body.velocity
 				);
 			},
@@ -547,17 +547,17 @@
 
 			    	turn(motionData);
 
-			    	SocketManager.send(
-				    	Util.parseToSendWebSocketData(
-				    		GAME_ACTION, 
-				    		_.extend(motionData, {
-					    		evt: 'virar',
-					    		id: currentlyControlled.id,
-					    		index: currentlyControlled.index,
-					    		nombrePartida: matchName
-					    	})
-				    	)
-			    	);
+			    	// SocketManager.send(
+				    // 	Util.parseToSendWebSocketData(
+				    // 		GAME_ACTION, 
+				    // 		_.extend(motionData, {
+					   //  		evt: 'virar',
+					   //  		id: currentlyControlled.id,
+					   //  		index: currentlyControlled.index,
+					   //  		nombrePartida: matchName
+					   //  	})
+				    // 	)
+			    	// );
 			    } else if(cursors.right.isDown) {
 			    	motionData = {
 			    		forward: true
@@ -565,17 +565,17 @@
 
 			        turn(motionData);
 
-			        SocketManager.send(
-				    	Util.parseToSendWebSocketData(
-				    		GAME_ACTION, 
-				    		_.extend(motionData, {
-					    		evt: 'virar',
-					    		id: currentlyControlled.id,
-					    		index: currentlyControlled.index,
-					    		nombrePartida: matchName
-					    	})
-				    	)
-			    	);
+			     //    SocketManager.send(
+				    // 	Util.parseToSendWebSocketData(
+				    // 		GAME_ACTION, 
+				    // 		_.extend(motionData, {
+					   //  		evt: 'virar',
+					   //  		id: currentlyControlled.id,
+					   //  		index: currentlyControlled.index,
+					   //  		nombrePartida: matchName
+					   //  	})
+				    // 	)
+			    	// );
 			    } 
 
 			    /**
@@ -590,7 +590,7 @@
 
 			    	move(game, motionData);
 
-			    	SocketManager.send(
+			    	/*SocketManager.send(
 				    	Util.parseToSendWebSocketData(
 				    		GAME_ACTION, 
 				    		_.extend(motionData, {
@@ -601,7 +601,7 @@
 					    		nombrePartida: matchName
 					    	})
 				    	)
-			    	);
+			    	);*/
 
 			    } else if(cursors.down.isDown) {
 			    	motionData = {
@@ -610,7 +610,7 @@
 
 			    	move(game, motionData);
 
-			    	SocketManager.send(
+			    	/*SocketManager.send(
 					    	Util.parseToSendWebSocketData(GAME_ACTION, {
 				    		evt: 'mover',
 				    		forward: false,
@@ -618,17 +618,17 @@
 				    		index: currentlyControlled.index,
 				    		nombrePartida: matchName
 				    	})
-			    	);
+			    	);*/
 			    }
 
 			    if(fireButton.isDown) {
 			    	fire(game, currentlyControlled);
-			    	SocketManager.send('requestAction:dibujar;' + JSON.stringify({
+			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
 			    		evt: 'fire',
 			    		id: currentlyControlled.id,
 			    		index: currentlyControlled.index,
 			    		nombrePartida: matchName
-			    	}))
+			    	}));*/
 			    }
 
 			    if(changeCharacterButton.isDown) {
