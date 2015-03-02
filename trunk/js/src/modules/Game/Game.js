@@ -2,12 +2,13 @@
 
 	window.Game = (function() {
 
-		var GAME_ACTION = 'dibujar',
+		var counter = 0,
+			GAME_ACTION = 'dibujar',
 			instance,
 			matchName,
 			match,
-			BarcoRadar = 400,
-			RangoAtaque = BarcoRadar / 2,
+			barcoRadar = 400,
+			rangoAtaque = barcoRadar / 2,
 			muelleLlegada,
 
 			counter = 0,
@@ -164,37 +165,29 @@
 			},
 
 			fire = function(game, data) {
-				var toMove = getToMove(data);
+				var toMove = getToMove(data),
+					bullet,
+					range,
+					angle;
 
-				//  To avoid them being allowed to fire too fast we set a time limit
 				if(toMove.id == 'freightboat') {
-				    if(game.time.now > bulletTime) {
-				        //  Grab the first bullet we can from the pool
-				        bullet = bullets.getFirstExists(false);
-
-				        if(bullet) {
-				            //  And fire it
-				            bullet.reset(toMove.x, toMove.y + 8);
-				            //bullet.body.velocity.y = -400;
-				            bullet.lifeSpan = RangoAtaque;
-				            game.physics.arcade.velocityFromAngle(toMove.angle + 90, 300, bullet.body.velocity);
-				            bulletTime = game.time.now + 200;
-				        }
-				    }
+					bullet = bulletsFreightBoat.getFirstExists(false);
+					range = rangoAtaque / 2;
+					angle = toMove.angle + 90;
 			    } else {
-			    	if(game.time.now > bulletTime) {
-				        //  Grab the first bullet we can from the pool
-				        bullet = bullets.getFirstExists(false);
+			    	bullet = bulletsSpeedBoat.getFirstExists(false);
+					range = rangoAtaque;
+					angle = toMove.angle;
+			    }
 
-				        if(bullet) {
-				            //  And fire it
-				            bullet.reset(toMove.x + 40, toMove.y + 22);
-				            bullet.lifeSpan = RangoAtaque;
-				            //bullet.body.velocity.y = -400;
-				            game.physics.arcade.velocityFromAngle(toMove.angle, 300, bullet.body.velocity);
-				            bulletTime = game.time.now + 200;
-				        }
-				    }
+			    if(game.time.now > bulletTime) {
+			        if(bullet) {
+			            //  And fire it
+			            bullet.reset(toMove.x, toMove.y);
+			            bullet.lifeSpan = range;
+			            game.physics.arcade.velocityFromAngle(angle, 300, bullet.body.velocity);
+			            bulletTime = game.time.now + 200;
+			        }
 			    }
 
 			},
@@ -383,14 +376,15 @@
 				return toMove;
 			},
 
-			turn = function(data) {
+			turn = function(evt, data) {
 				var toTurn = getToMove(data);
 				toTurn.body.angularVelocity = data.forward == 'true' || data.forward == true ? 200 : -200;
 			},
 
-			move = function(game, data) {
+			move = function(data) {
 				var toMove = getToMove(data);
 
+				console.log('gets here for the  ' + (counter++) + ': ', data);
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
 					data.forward == 'true' || data.forward == true ? 300 : (-1 * 300),
@@ -398,8 +392,8 @@
 				);
 			},
 
-			changeCharacter = function(game) {
-				
+			changeCharacter = function(game, data) {
+				currentlyControlled = getToMove(data);
 			},
 
 			distanciaEntreSprites = function(obj1, obj2, game) {		
@@ -431,23 +425,44 @@
 
 			distanciaBarcoLanchas = function(obj1, obj2, game) {
 				//solo si no hundimos la lancha (obj2)
-				if(obj2.exists){	
+				if(obj2.exists) {
 
 					//radar barco
-					if (game.physics.arcade.distanceBetween(obj1,obj2) < BarcoRadar && game.physics.arcade.distanceBetween(obj1,obj2) > RangoAtaque) { 
+					if (game.physics.arcade.distanceBetween(obj1,obj2) < barcoRadar && 
+						game.physics.arcade.distanceBetween(obj1,obj2) > rangoAtaque) { 
+
 						obj2.alpha = 0.3;
 						//lo ve y puede atacar
-					}else if (game.physics.arcade.distanceBetween(obj1,obj2) < RangoAtaque){
-						obj2.alpha = 1.0;				
+					} else if(game.physics.arcade.distanceBetween(obj1,obj2) < rangoAtaque) {
+						obj2.alpha = 1.0;		
 						//no lo ve
-					} else if (game.physics.arcade.distanceBetween(obj1, speedBoats.children[0]) > BarcoRadar
-						&&
-						game.physics.arcade.distanceBetween(obj1, speedBoats.children[1]) > BarcoRadar
-						&&
-						game.physics.arcade.distanceBetween(obj1, speedBoats.children[2]) > BarcoRadar
-						){
+					} else if(game.physics.arcade.distanceBetween(obj1, speedBoats.children[0]) > barcoRadar ||
+						game.physics.arcade.distanceBetween(obj1, speedBoats.children[1]) > barcoRadar ||
+						game.physics.arcade.distanceBetween(obj1, speedBoats.children[2]) > barcoRadar) {
 							obj2.alpha = 0.0;
 					}						
+				}
+			},
+
+			distanciaLanchaBarco = function(obj1, obj2, game) {
+				if(obj2.exists) {
+					if(game.physics.arcade.distanceBetween(obj1, obj2) < rangoAtaque) {
+						obj2.alpha = 1.0;
+					} else if(game.physics.arcade.distanceBetween(obj1, obj2) > rangoAtaque) {
+						obj2.alpha = 0.0;
+					}
+				}
+			},
+
+			updateBoat = function(data) {
+				var toMove = getToMove(data);
+
+				toMove.angle = parseFloat(data.angle);
+				toMove.position.x = parseFloat(data.x);
+				toMove.position.y = parseFloat(data.y);
+
+				if(data.shoot == 'true' || data.shoot ==  true) {
+					fire(instance, data);
 				}
 			},
 
@@ -511,10 +526,9 @@
 
 			update: function(game) {
 				motionData = {};
-
-				currentlyControlled.body.velocity.x = 0;
-			    currentlyControlled.body.velocity.y = 0;
-			    currentlyControlled.body.angularVelocity = 0;
+				somethingHapenned = false;
+				shoot = false;
+				change = false;
 
 			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
@@ -524,9 +538,13 @@
 			    game.physics.arcade.collide(costas, speedBoats);
 			    game.physics.arcade.collide(costas, freightBoat);
 
-			    distanciaBarcoLanchas(freightBoat, speedBoats.children[0], game);
-			    distanciaBarcoLanchas(freightBoat, speedBoats.children[1], game);
-			    distanciaBarcoLanchas(freightBoat, speedBoats.children[2], game);
+			    if(currentlyControlled.id == 'freightboat') {
+				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[0], game);
+				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[1], game);
+				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[2], game);
+			    } else {
+			    	distanciaLanchaBarco(currentlyControlled, freightBoat, game);
+			    }
 
 			    if(match.tipoMapa == 'ISLAS') {
 				    for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
@@ -537,106 +555,98 @@
 			    	game.physics.arcade.collide(speedBoats, island);
 			    }
 
-			    /**
-			     * To turn the boat around
-			     */
-			    if(cursors.left.isDown) {
-			    	motionData = {
-			    		forward: false
-			    	}
-
-			    	turn(motionData);
-
-			    	// SocketManager.send(
-				    // 	Util.parseToSendWebSocketData(
-				    // 		GAME_ACTION, 
-				    // 		_.extend(motionData, {
-					   //  		evt: 'virar',
-					   //  		id: currentlyControlled.id,
-					   //  		index: currentlyControlled.index,
-					   //  		nombrePartida: matchName
-					   //  	})
-				    // 	)
-			    	// );
-			    } else if(cursors.right.isDown) {
-			    	motionData = {
-			    		forward: true
-			    	}
-
-			        turn(motionData);
-
-			     //    SocketManager.send(
-				    // 	Util.parseToSendWebSocketData(
-				    // 		GAME_ACTION, 
-				    // 		_.extend(motionData, {
-					   //  		evt: 'virar',
-					   //  		id: currentlyControlled.id,
-					   //  		index: currentlyControlled.index,
-					   //  		nombrePartida: matchName
-					   //  	})
-				    // 	)
-			    	// );
-			    } 
+			    currentlyControlled.body.velocity.x = 0;
+				currentlyControlled.body.velocity.y = 0;
+				currentlyControlled.body.angularVelocity = 0;
 
 			    /**
 			     * To move it back and forth
 			     */
 			    if(cursors.up.isDown) {
-			    	console.log('counter at update: ', counter++);
-
 			    	motionData = {
 			    		forward: true
 			    	};
 
-			    	move(game, motionData);
+			    	move(motionData);
 
-			    	/*SocketManager.send(
-				    	Util.parseToSendWebSocketData(
-				    		GAME_ACTION, 
-				    		_.extend(motionData, {
-					    		evt: 'mover',
-					    		id: currentlyControlled.id,
-					    		index: currentlyControlled.index,
-					    		forward: true,
-					    		nombrePartida: matchName
-					    	})
-				    	)
-			    	);*/
+			    	/**
+				     * To turn the boat around
+				     */
+				    if(cursors.left.isDown) {
+				    	motionData = {
+				    		forward: false
+				    	}
+
+				    	turn(null, motionData);
+				    } else if(cursors.right.isDown) {
+				    	motionData = {
+				    		forward: true
+				    	}
+
+				        turn(null, motionData);
+				    }
+				    somethingHapenned = true;
 
 			    } else if(cursors.down.isDown) {
 			    	motionData = {
 			    		forward: false
 			    	};
 
-			    	move(game, motionData);
+			    	move(motionData);
+			    	/**
+				     * To turn the boat around
+				     */
+				    if(cursors.left.isDown) {
+				    	motionData = {
+				    		forward: false
+				    	}
 
-			    	/*SocketManager.send(
-					    	Util.parseToSendWebSocketData(GAME_ACTION, {
-				    		evt: 'mover',
-				    		forward: false,
-				    		id: currentlyControlled.id,
-				    		index: currentlyControlled.index,
-				    		nombrePartida: matchName
-				    	})
-			    	);*/
+				    	turn(null, motionData);
+				    } else if(cursors.right.isDown) {
+				    	motionData = {
+				    		forward: true
+				    	}
+
+				        turn(null, motionData);
+				    }
+				    somethingHapenned = true;
 			    }
 
 			    if(fireButton.isDown) {
 			    	fire(game, currentlyControlled);
-			    	/*SocketManager.send('requestAction:dibujar;' + JSON.stringify({
-			    		evt: 'fire',
-			    		id: currentlyControlled.id,
-			    		index: currentlyControlled.index,
-			    		nombrePartida: matchName
-			    	}));*/
+					somethingHapenned = true;
+					shoot = true;
 			    }
 
-			    if(changeCharacterButton.isDown) {
-			    	/*changeCharacter(game, changeCharacterButton);
-			    	SocketManager.send('requestAction:dibujar;' + JSON.stringify({
-			    		turn: 'right'
-			    	}))*/
+			    if(currentlyControlled.id == 'speedboat' && changeCharacterButton.isDown) {
+			    	changeCharacter({
+			    		id: currentlyControlled.id,
+			    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
+			    				currentlyControlled.index + 1 :
+			    				0 
+			    	});			
+
+					somethingHapenned = true;
+					change = true;
 			    }
+
+			    if(somethingHapenned) {
+			    	SocketManager.send(
+				    	Util.parseToSendWebSocketData(
+				    		GAME_ACTION, 
+				    		_.extend(motionData, {
+					    		id: currentlyControlled.id,
+					    		index: currentlyControlled.index,
+					    		x: currentlyControlled.position.x,
+					    		y: currentlyControlled.position.y,				    		
+					    		angle: currentlyControlled.angle,
+					    		nombrePartida: matchName, 
+					    		shoot: shoot,
+					    		change: change
+					    	})
+				    	)
+			    	);
+		    	}
 			},
 
 			getFreightBoat: function() {
@@ -674,6 +684,7 @@
 			move: move,
 			turn: turn,
 			fire: fire,
+			updateBoat: updateBoat,
 
 			setMatchData: function(data) {
 				var hoseCounter = 0,
@@ -735,6 +746,10 @@
 				}
 
 				return match;
+			},
+
+			getCounter: function() {
+				return counter;
 			}
 		} 
 
