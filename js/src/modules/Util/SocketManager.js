@@ -6,6 +6,12 @@
 			gameStarted = false,
 			socketCounter = 0,
 
+			dataForLoad = function(data) {
+				return _.filter(data.data, function(matchInfo) { 
+					return matchInfo.manguera1 == true || matchInfo.manguera1 == false
+				}).length > 0;
+			},
+
 			bindEvents = function() {
 
 				ws.open = function(evt) {
@@ -27,9 +33,9 @@
 							Game.turn(null, data.data[0]);
 						}*/
 						//pubsub.publish(data.data[0].evt, data.data[0]);
-					} else if(data.evt == 'setCargarPartida') {
+					} else if(data.evt == 'setCargarPartida' || (data.data && dataForLoad(data))) {
 						var loadedMatch = Game.setMatchData(data.data);
-						pubsub.publish(data.evt, loadedMatch.match);
+						pubsub.publish('setCargarPartida', loadedMatch.match);
 					} else {
 						pubsub.publish(data.evt, data.data);
 					}
