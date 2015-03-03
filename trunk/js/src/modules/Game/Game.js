@@ -247,29 +247,33 @@
 					health = Config.Boat.getSpeedBoatConfig().stamina;
 
 				for(var i = 0; i < players.speedBoat.qty; i++) {
-					var currentSpedBoatData = match.speedBoats ? match.speedBoats[i] : null,
-						speedBoat = speedBoats.create(
-										currentSpedBoatData ? currentSpedBoatData.x : 1450 + separationCoef, 
-										currentSpedBoatData ? currentSpedBoatData.y : 1811, 
-										players.speedBoat.sprite
-									);
+					var currentSpeedBoatData = match.speedBoats ? match.speedBoats[i] : null;
+
+					if(!currentSpeedBoatData || currentSpeedBoatData.health > 0) {
+						var speedBoat = speedBoats.create(
+											currentSpeedBoatData ? currentSpeedBoatData.x : 1450 + separationCoef, 
+											currentSpeedBoatData ? currentSpeedBoatData.y : 1811, 
+											players.speedBoat.sprite
+										);
+					
 						
-					speedBoat.health = currentSpedBoatData ? currentSpedBoatData.health : health;
+						speedBoat.health = currentSpeedBoatData ? currentSpeedBoatData.health : health;
 
-					speedBoat.anchor.setTo(0.5, 0.5)
-					speedBoat.angle = game.rnd.angle();
-					speedBoat.angle = currentSpedBoatData ? currentSpedBoatData.angle : -90;
-					speedBoat.index = i;
-					speedBoat.id = 'speedboat';
+						speedBoat.anchor.setTo(0.5, 0.5)
+						speedBoat.angle = game.rnd.angle();
+						speedBoat.angle = currentSpeedBoatData ? currentSpeedBoatData.angle : -90;
+						speedBoat.index = i;
+						speedBoat.id = 'speedboat';
 
-					game.physics.arcade.enable(speedBoat);
+						game.physics.arcade.enable(speedBoat);
 
-					speedBoat.body.bounce.y = 0;
-				    speedBoat.body.gravity.y = 0;
-				    speedBoat.body.collideWorldBounds = true;
-				    speedBoat.body.drag.set(0.2);
+						speedBoat.body.bounce.y = 0;
+					    speedBoat.body.gravity.y = 0;
+					    speedBoat.body.collideWorldBounds = true;
+					    speedBoat.body.drag.set(0.2);
 
-					separationCoef += 200;
+						separationCoef += 200;
+					}
 				}
 
 				return speedBoats;
@@ -391,6 +395,7 @@
 
 			changeCharacter = function(game, data) {
 				currentlyControlled = getToMove(data);
+				game.camera.follow(currentlyControlled);
 			},
 
 			distanciaEntreSprites = function(obj1, obj2, game) {		
@@ -528,7 +533,7 @@
 				shoot = false;
 				change = false;
 
-			    //game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
+			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
@@ -551,9 +556,9 @@
 			    }*/
 
 			    if(currentlyControlled.id == 'freightboat') {
-				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[0], game);
-				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[1], game);
-				    distanciaBarcoLanchas(currentlyControlled, speedBoats.children[2], game);
+			    	for(var i = 0, currentSpeedBoat; currentSpeedBoat = speedBoats.children[i]; i++) {
+			    		distanciaBarcoLanchas(currentlyControlled, currentSpeedBoat, game);
+			    	}
 			    } else {
 			    	distanciaLanchaBarco(currentlyControlled, freightBoat, game);
 			    }
@@ -631,15 +636,12 @@
 			    }
 
 			    if(currentlyControlled.id == 'speedboat' && changeCharacterButton.isDown) {
-			    	changeCharacter({
+			    	changeCharacter(game, {
 			    		id: currentlyControlled.id,
 			    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
 			    				currentlyControlled.index + 1 :
 			    				0 
-			    	});			
-
-					somethingHapenned = true;
-					change = true;
+			    	});
 			    }
 
 			    if(somethingHapenned) {
@@ -675,10 +677,6 @@
 
 			setSpeedboats: function(currentSpeedBoats) {
 				speedBoats = currentSpeedBoats;
-			},
-
-			getChangeCharacterButton: function() {
-				return changeCharacterButton;
 			},
 
 			getCurrentlyControlled: function() {
