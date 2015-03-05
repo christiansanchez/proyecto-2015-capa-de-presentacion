@@ -42,3 +42,21 @@
 .container {
 	max-width: 1000px !important;
 }
+
+.glyphicon {
+	font-size: 20px;
+}
+
+.clear {
+	border: 1px solid #337ab7 !important;
+	color: #337ab7 !important;
+	background: #fff !important;
+}
+
+.winner-banner {
+	text-align: center;
+}
+
+.winner-banner img {
+	width: 70%;
+}

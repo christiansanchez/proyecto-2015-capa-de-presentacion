@@ -2,26 +2,29 @@
 
 	window.Menu.View = (function() {
 
-			var TPL_SUFFIX = '-tpl',
+			var TPL_SUFFIX 			= '-tpl',
+				IMAGE_PLACEHOLDER 	= '{{=image}}',
+				IMG_FREIGHTBOAT 	= 'assets/vistaLateralCarguero.gif',
+				IMG_SPEEDBOAT 		= 'assets/vistaLateralLancha.gif',
+				
+				img 			= '<img src="' + IMAGE_PLACEHOLDER + '">',
+				actions 		= Actions.get(),
+				actionsWrapper 	= $('#actions'),
+				body 			= $('body'),
+				saveButton 		= $('[data-action="save"]'),
+				winnerBanner 	= $('.winner-banner'),
 
-				actions = Actions.get(),
-				actionsWrapper = $('#actions'),
-				body = $('body'),
+				getImage = function(id) {
+					return id == 'freightboat' ?
+							img.replace(IMAGE_PLACEHOLDER, IMG_FREIGHTBOAT) :
+							img.replace(IMAGE_PLACEHOLDER, IMG_SPEEDBOAT);
+				},
 
 				showErrors = function() {
 					var errors = Validation.getErrors();
 
 					$('.actions-modal').after(errors[0]);
 				},
-
-				/*showModal = function(target, data) {
-					$.modal(
-							Templates.compileTemplate(
-								target, 
-								data
-							)
-						);
-				},*/
 
 				showModal = function(evt, data) {
 					if(evt == Methods.getGetJoinMethod()) {
@@ -133,6 +136,38 @@
 					SocketManager.send(dataToSave);
 				},
 
+				showSaveConfirmation = function() {
+					saveButton
+						.addClass('clear')
+						.html('Partida guardada');
+
+					setTimeout(function() {
+						saveButton
+							.removeClass('clear')
+							.html('Guardar partida');
+					}, 3000);
+				},
+
+				initGame = function() {
+					$('#menu-container').addClass('hidden');
+				},
+
+				endGame = function() {
+					$('.game-actions').addClass('hidden');
+				},
+
+				showWinner = function(id) {
+					$('#' + Game.getInstance().parent).hide();
+
+					$(getImage(id)).load(function() {
+						winnerBanner
+							.html($(this))
+							.removeClass('hidden');
+
+						$('[data-action="restart"]').removeClass('hidden');
+					});
+				},
+
 				abandon = function(e) {
 					$.modal.close();
 
@@ -146,12 +181,28 @@
 						match = Matches.getMatches()[0];
 					}
 
+					var currentlyControlled = Game.getCurrentlyControlled;
+
 					SocketManager.send(
 							Util.parseToSendWebSocketData(
 								'abandonar',
-								match
+								{
+									nombrePartida: match.nombrePartida,
+									endMatch: true,
+									winner: currentlyControlled.id == 'freightboat' ?
+												speedboat :
+												freightboat
+								}
 							)
 						);
+				},
+
+				handleVolume = function(e) {
+					Game.manageVolume($(e.target).data('volume'));
+				},
+
+				restart = function() {
+					document.location.reload();
 				};
 
 			return {
@@ -164,13 +215,18 @@
 					body.on('submit', '[data-action="load"]', load);
 					body.on('click', '[data-action="abandon"]', abandon);
 					body.on('click', '[data-action="save"]', save);
+					body.on('click', '[data-action="restart"]', restart);
 					
 					body.on('click', '[data-action="back"]', back);
+					body.on('click', '[data-volume="off"]', handleVolume);
+					body.on('click', '[data-volume="on"]', handleVolume);
 				},
 
 				showModal: showModal,
-
-				showWaiting: showWaiting
+				showWaiting: showWaiting,
+				initGame: initGame,
+				showSaveConfirmation: showSaveConfirmation,
+				showWinner: showWinner
 			};
 
 		})();
