@@ -3,8 +3,8 @@
 	window.Collisions = (function() {
 
 		var boardingPossibilities = {
-					plus: 20,
-					minus: 20
+					plus: 90,
+					minus: 90
 				},
 
 			aboardAlowedConditions = {
@@ -26,7 +26,7 @@
 
 				do {
 					free = !freightBoat.hoses[combinations[i][0]] &&
-							!freightBoat.hoses[combinations[i][0]];
+							!freightBoat.hoses[combinations[i][1]];
 					i++;
 				} while(!free && i < combinations.length);
 

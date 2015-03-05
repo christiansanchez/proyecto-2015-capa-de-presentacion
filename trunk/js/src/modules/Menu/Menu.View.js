@@ -150,6 +150,7 @@
 
 				initGame = function() {
 					$('#menu-container').addClass('hidden');
+					$('.game-actions').removeClass('hidden');
 				},
 
 				endGame = function() {
