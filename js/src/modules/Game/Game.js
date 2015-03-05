@@ -351,7 +351,7 @@
 				} else {
 					sb.kill();
 
-					if(currentlyControlled.id == 'speedboat') {
+					if(currentlyControlled && currentlyControlled.id == 'speedboat') {
 						currentlyControlled = speedBoats.getFirstAlive();
 						instance.camera.follow(currentlyControlled);
 					}
@@ -419,7 +419,7 @@
 
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
-					data.forward == 'true' || data.forward == true ? 100 : (-1 * 100),
+					data.forward == 'true' || data.forward == true ? 200 : (-1 * 200),
 					toMove.body.velocity
 				);
 			},
@@ -594,7 +594,7 @@
 			    	console.log('is blocked!', currentlyControlled.body.blocked);
 			    }*/
 
-			    if(!endMatch) {
+			    if(!endMatch && currentlyControlled) {
 				    if(currentlyControlled.id == 'freightboat') {
 				    	for(var i = 0, currentSpeedBoat; currentSpeedBoat = speedBoats.children[i]; i++) {
 				    		distanciaBarcoLanchas(currentlyControlled, currentSpeedBoat, game);
