@@ -7,13 +7,6 @@
 			currentMatch,
 			role,
 
-			endGame = function() {
-				/**
-				 * Determine winner or draw.
-				 * Show score?
-				 */
-			},
-
 			newPlayer = function(evt, data) {
 				data = _.isArray(data) ? data[0] : data;
 
@@ -52,11 +45,6 @@
 				// 	)
 			},
 
-			abandon = function(evt, data) {
-				players.splice(data.index, 1);
-				endGame();
-			},
-
 			shoot = function(evt, data) {
 				/**
 				 * Que dispare el jugador
@@ -87,7 +75,6 @@
 
 				jQuery.pubsub.subscribe('mover', Game.move); // Mover
 				jQuery.pubsub.subscribe('virar', Game.turn); // Virar
-				jQuery.pubsub.subscribe('abandonar', abandon); // Virar
 				jQuery.pubsub.subscribe('fire', Game.fire)
 
 				// jQuery.pubsub.subscribe(Events.SHOT_PLAYER, shoot);

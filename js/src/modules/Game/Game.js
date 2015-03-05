@@ -4,18 +4,24 @@
 
 		var counter = 0,
 			GAME_ACTION = 'dibujar',
+			END_ACTION = 'abandonar',
 			instance,
 			matchName,
 			match,
-			barcoRadar = 400,
+			barcoRadar = 600,
 			rangoAtaque = barcoRadar / 2,
 			muelleLlegada,
+			endMatch = false,
 
 			counter = 0,
 			path 	= General.getAssetsPath(),
 			types 	= General.getAssetTypes(),
 			players	= Player.getPlayers(),
 			coords  = {},
+
+			sonidoDisparo,
+			backgroundMusic,
+			radar,
 
 			map,
 			freightBoat,
@@ -81,6 +87,24 @@
 					var currentImage = images[image];
 					game.load.image(currentImage.tag, path + currentImage.file);
 				}
+
+				game.load.audio('disparo', 'assets/disparo.ogg');
+				game.load.audio('backgroundMusic', 'assets/backgroundMusic.ogg');
+				game.load.audio('radar', 'assets/radar.ogg');
+			},
+
+			initSounds = function(game) {
+				backgroundMusic = game.add.audio('backgroundMusic');
+				backgroundMusic.volume = 0.1;
+				backgroundMusic.loop = true;
+				backgroundMusic.play();
+
+				sonidoDisparo = game.add.audio('disparo');
+				sonidoDisparo.volume = 0.9; //Cambiar el volumen  
+				sonidoDisparo.allowMultiple = true;
+				
+				radar = game.add.audio('radar');
+				radar.volume = 1.0; //Cambiar el volumen 
 			},
 
 			initMap = function(game) {
@@ -182,6 +206,7 @@
 			    if(game.time.now > bulletTime) {
 			        if(bullet) {
 			            //  And fire it
+			            sonidoDisparo.play();
 			            bullet.reset(toMove.x, toMove.y);
 			            bullet.lifeSpan = range;
 			            game.physics.arcade.velocityFromAngle(angle, 300, bullet.body.velocity);
@@ -325,7 +350,10 @@
 			},
 
 			collisionHandler = function(fb, sb) {
-				sb.kill();
+				console.log('fb: ', fb);
+				console.log('fb: ', sb);
+				
+				//sb.kill();
 			},
 
 			stopGoing = function(fb, i) {
@@ -434,6 +462,15 @@
 						game.physics.arcade.distanceBetween(obj1,obj2) > rangoAtaque) { 
 
 						obj2.alpha = 0.3;
+
+						if(obj2.scale.x > 0.9 && obj2.scale.x < 1.1){
+							game.add.tween(obj2.scale).to( { x: 1.15, y: 1.15 }, 5, Phaser.Easing.Linear.None, true);
+							obj2.alpha = 0.3;
+						}else if(obj2.scale.x > 1.1){
+							game.add.tween(obj2.scale).to( { x: 1, y: 1 }, 10, Phaser.Easing.Linear.None, true);
+							obj2.alpha = 0.2;
+						}
+
 						//lo ve y puede atacar
 					} else if(game.physics.arcade.distanceBetween(obj1,obj2) < rangoAtaque) {
 						obj2.alpha = 1.0;		
@@ -469,7 +506,7 @@
 			},
 
 			handleArrival = function(muelle, freightBoat) {
-				
+				endMatch = true;
 			};
 
 		return {
@@ -490,12 +527,9 @@
 						}
 					)
 
+					Menu.View.initGame();
+
 					gameStarted = true;
-
-					$('#menu-container').addClass('hidden');
-					$('#game-wrapper').removeClass('hidden');
-					$('[data-action="save"], [data-action="abandon"]').removeClass('hidden');
-
 					playerData = data;
 					matchName = data.nombrePartida;
 
@@ -513,6 +547,7 @@
 				game.physics.startSystem(Phaser.Physics.ARCADE);
 
 				initMap(game);
+				initSounds(game);
 				initfreightBoats(game);
 				initSpeedboats(game);
 				initBullets(game);
@@ -555,99 +590,105 @@
 			    	console.log('is blocked!', currentlyControlled.body.blocked);
 			    }*/
 
-			    if(currentlyControlled.id == 'freightboat') {
-			    	for(var i = 0, currentSpeedBoat; currentSpeedBoat = speedBoats.children[i]; i++) {
-			    		distanciaBarcoLanchas(currentlyControlled, currentSpeedBoat, game);
-			    	}
+			    if(!endMatch) {
+				    if(currentlyControlled.id == 'freightboat') {
+				    	for(var i = 0, currentSpeedBoat; currentSpeedBoat = speedBoats.children[i]; i++) {
+				    		distanciaBarcoLanchas(currentlyControlled, currentSpeedBoat, game);
+				    	}
+				    } else {
+				    	distanciaLanchaBarco(currentlyControlled, freightBoat, game);
+				    }
+
+				    if(match.tipoMapa == 'ISLAS' || (match.match && match.match.tipoMapa == 'ISLAS')) {
+					    for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
+					    	distanciaEntreSprites(currentlyControlled, islandPiece, game);
+					    }
+
+					    game.physics.arcade.collide(freightBoats, island);
+				    	game.physics.arcade.collide(speedBoats, island);
+				    }
+
+				    currentlyControlled.body.velocity.x = 0;
+					currentlyControlled.body.velocity.y = 0;
+					currentlyControlled.body.angularVelocity = 0;
+
+				    /**
+				     * To move it back and forth
+				     */
+				    if(cursors.up.isDown) {
+				    	motionData = {
+				    		forward: true
+				    	};
+
+				    	move(motionData);
+
+				    	/**
+					     * To turn the boat around
+					     */
+					    if(cursors.left.isDown) {
+					    	motionData = {
+					    		forward: false
+					    	}
+
+					    	turn(null, motionData);
+					    } else if(cursors.right.isDown) {
+					    	motionData = {
+					    		forward: true
+					    	}
+
+					        turn(null, motionData);
+					    }
+					    somethingHapenned = true;
+
+				    } else if(currentlyControlled.id == 'freightboat' && cursors.down.isDown) {
+				    	motionData = {
+				    		forward: false
+				    	};
+
+				    	move(motionData);
+				    	/**
+					     * To turn the boat around
+					     */
+					    if(cursors.left.isDown) {
+					    	motionData = {
+					    		forward: false
+					    	}
+
+					    	turn(null, motionData);
+					    } else if(cursors.right.isDown) {
+					    	motionData = {
+					    		forward: true
+					    	}
+
+					        turn(null, motionData);
+					    }
+					    somethingHapenned = true;
+				    }
+
+				    if(fireButton.isDown) {
+				    	fire(game, currentlyControlled);
+						somethingHapenned = true;
+						shoot = true;
+				    }
+
+				    if(currentlyControlled.id == 'speedboat' && changeCharacterButton.isDown) {
+				    	changeCharacter(game, {
+				    		id: currentlyControlled.id,
+				    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
+				    				currentlyControlled.index + 1 :
+				    				0 
+				    	});
+				    }
 			    } else {
-			    	distanciaLanchaBarco(currentlyControlled, freightBoat, game);
-			    }
-
-			    if(match.tipoMapa == 'ISLAS' || (match.match && match.match.tipoMapa == 'ISLAS')) {
-				    for(var i = 0, islandPiece; islandPiece = island.children[i]; i++) {
-				    	distanciaEntreSprites(currentlyControlled, islandPiece, game);
-				    }
-
-				    game.physics.arcade.collide(freightBoats, island);
-			    	game.physics.arcade.collide(speedBoats, island);
-			    }
-
-			    currentlyControlled.body.velocity.x = 0;
-				currentlyControlled.body.velocity.y = 0;
-				currentlyControlled.body.angularVelocity = 0;
-
-			    /**
-			     * To move it back and forth
-			     */
-			    if(cursors.up.isDown) {
-			    	motionData = {
-			    		forward: true
-			    	};
-
-			    	move(motionData);
-
-			    	/**
-				     * To turn the boat around
-				     */
-				    if(cursors.left.isDown) {
-				    	motionData = {
-				    		forward: false
-				    	}
-
-				    	turn(null, motionData);
-				    } else if(cursors.right.isDown) {
-				    	motionData = {
-				    		forward: true
-				    	}
-
-				        turn(null, motionData);
-				    }
-				    somethingHapenned = true;
-
-			    } else if(currentlyControlled.id == 'freightboat' && cursors.down.isDown) {
-			    	motionData = {
-			    		forward: false
-			    	};
-
-			    	move(motionData);
-			    	/**
-				     * To turn the boat around
-				     */
-				    if(cursors.left.isDown) {
-				    	motionData = {
-				    		forward: false
-				    	}
-
-				    	turn(null, motionData);
-				    } else if(cursors.right.isDown) {
-				    	motionData = {
-				    		forward: true
-				    	}
-
-				        turn(null, motionData);
-				    }
-				    somethingHapenned = true;
-			    }
-
-			    if(fireButton.isDown) {
-			    	fire(game, currentlyControlled);
-					somethingHapenned = true;
-					shoot = true;
-			    }
-
-			    if(currentlyControlled.id == 'speedboat' && changeCharacterButton.isDown) {
-			    	changeCharacter(game, {
-			    		id: currentlyControlled.id,
-			    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
-			    				currentlyControlled.index + 1 :
-			    				0 
-			    	});
+			    	somethingHapenned = true;
 			    }
 
 			    if(somethingHapenned) {
 			    	SocketManager.send(
 				    	Util.parseToSendWebSocketData(
-				    		GAME_ACTION, 
+				    		endMatch ?
+				    			END_ACTION :
+				    			GAME_ACTION,
 				    		_.extend(motionData, {
 					    		id: currentlyControlled.id,
 					    		index: currentlyControlled.index,
@@ -656,10 +697,16 @@
 					    		angle: currentlyControlled.angle,
 					    		nombrePartida: matchName, 
 					    		shoot: shoot,
-					    		change: change
+					    		change: change,
+					    		endMatch: endMatch,
+					    		winner: currentlyControlled.id
 					    	})
 				    	)
 			    	);
+
+			    	if(endMatch) {
+			    		Menu.View.showWinner(currentlyControlled.id);
+			    	}
 		    	}
 			},
 
@@ -684,7 +731,7 @@
 			},
 
 			getInstance: function() {
-				return game;
+				return instance;
 			},
 
 			getMatch: function() {
@@ -760,6 +807,18 @@
 
 			getCounter: function() {
 				return counter;
+			},
+
+			manageVolume: function(onOrOff) {
+				if(onOrOff == 'off') {
+					backgroundMusic.stop();
+					$('.glyphicon-volume-off').hide();
+					$('.glyphicon-volume-up').show()
+				} else {
+					backgroundMusic.stop();
+					$('.glyphicon-volume-off').show();
+					$('.glyphicon-volume-up').hide();
+				}
 			}
 		} 
 

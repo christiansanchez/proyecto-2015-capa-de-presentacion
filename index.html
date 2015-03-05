@@ -13,11 +13,11 @@
 				<div class="header">
 					<nav>
 						<ul class="nav nav-pills pull-right">
-							<li>
-								<button type="button" class="btn btn-primary navbar-btn hidden" data-action="save">Guardar partida</button>
+							<li class="game-actions hidden">
+								<button type="button" class="btn btn-primary navbar-btn" data-action="save">Guardar partida</button>
 							</li>
-							<li>
-								<button type="button" class="btn btn-primary navbar-btn hidden" data-action="abandon" data-target="abandon">Abandonar partida</button>
+							<li class="game-actions hidden">
+								<button type="button" class="btn btn-primary navbar-btn" data-action="abandon" data-target="abandon">Abandonar partida</button>
 							</li>
 							<li role="presentation"><a href="javascript:;">Ayuda</a></li>
 						</ul>
@@ -45,6 +45,12 @@
 			
 			<div id="game-wrapper" class="hidden">
 				<div id="game-container"></div>
+				<!-- span class="glyphicon glyphicon-volume-off" data-volume="off"></span>
+				<span class="glyphicon glyphicon-volume-up hidden" data-volume="on"></span-->
+				<div class="winner-banner hidden"></div>
+				<div class="row col-lg-12">
+					<button type="button" class="btn btn-primary hidden" data-action="restart">Reiniciar juego</button>
+				</div>
 			</div>
 
 			<!-- footer class="footer">

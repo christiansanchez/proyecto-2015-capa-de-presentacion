@@ -27,15 +27,13 @@
 
 					if(data.evt == 'dibujar') {
 						Game.updateBoat(data.data[0]);
-						/*if(data.data[0].evt == 'mover') {
-							Game.move(data.data[0]);
-						} else if(data.data[0].evt == 'virar') {
-							Game.turn(null, data.data[0]);
-						}*/
-						//pubsub.publish(data.data[0].evt, data.data[0]);
+					} else if(data.evt == 'abandonar') {
+						Menu.View.showWinner(data.data[0].winner);
 					} else if(data.evt == 'setCargarPartida' || (data.data && dataForLoad(data))) {
 						var loadedMatch = Game.setMatchData(data.data);
 						pubsub.publish('setCargarPartida', loadedMatch.match);
+					} else if(data.evt == 'guardar') {
+						Menu.View.showSaveConfirmation();
 					} else {
 						pubsub.publish(data.evt, data.data);
 					}
