@@ -11,7 +11,9 @@
 			barcoRadar = 600,
 			rangoAtaque = barcoRadar / 2,
 			muelleLlegada,
+			
 			endMatch = false,
+			winner,
 
 			counter = 0,
 			path 	= General.getAssetsPath(),
@@ -97,7 +99,7 @@
 				backgroundMusic = game.add.audio('backgroundMusic');
 				backgroundMusic.volume = 0.1;
 				backgroundMusic.loop = true;
-				backgroundMusic.play();
+				//backgroundMusic.play();
 
 				sonidoDisparo = game.add.audio('disparo');
 				sonidoDisparo.volume = 0.9; //Cambiar el volumen  
@@ -216,25 +218,6 @@
 
 			},
 
-			initCannons = function(game) {
-				var cannonsQty = players.freightBoat.cannons,
-					coords = {
-						x: freightBoat.body.x + 5,
-						y: freightBoat.body.y + 5
-					};
-
-				cannons = game.add.group();
-
-				for(var i = 0; i < cannonsQty; i++) {
-
-				    var currentCannon = cannons.create(coords.x, coords.y, 'bullet');
-				    game.physics.arcade.enable(currentCannon);
-
-				    coords.x += 5;
-				    coords.y += 5;
-			    }
-			},
-
 			initfreightBoats = function(game) {
 				/**
 				 * Adding freight boat
@@ -246,14 +229,20 @@
 				freightBoat = match.freightBoat ?
 								freightBoats.create(match.freightBoat.x, match.freightBoat.y, players.freightBoat.sprite) :
 								freightBoats.create(50, 0, players.freightBoat.sprite);
+
 				freightBoat.anchor.setTo(0.5, 0.5);
 				freightBoat.angle = game.rnd.angle();
 				freightBoat.angle = match.freightBoat ?
 										match.freightBoat.angle :
 										90;
+
 				freightBoat.health = match.freightBoat ? 
 										match.freightBoat.health : 
 										Config.Boat.getDefaultConfig().stamina;
+
+				freightBoat.hoses = match.freightBoat ?
+										match.freightBoat.hoses :
+										[true, true, true, true, true, true, true, true];
 
 				game.physics.arcade.enable(freightBoat);
 
@@ -276,8 +265,10 @@
 
 					if(!currentSpeedBoatData || currentSpeedBoatData.health > 0) {
 						var speedBoat = speedBoats.create(
-											currentSpeedBoatData ? currentSpeedBoatData.x : 1450 + separationCoef, 
-											currentSpeedBoatData ? currentSpeedBoatData.y : 1811, 
+											/*currentSpeedBoatData ? currentSpeedBoatData.x : 1450 + separationCoef, 
+											currentSpeedBoatData ? currentSpeedBoatData.y : 1811, */
+											currentSpeedBoatData ? currentSpeedBoatData.x : 300 + separationCoef, 
+											currentSpeedBoatData ? currentSpeedBoatData.y : 300, 
 											players.speedBoat.sprite
 										);
 					
@@ -350,30 +341,42 @@
 			},
 
 			collisionHandler = function(fb, sb) {
-				console.log('fb: ', fb);
-				console.log('fb: ', sb);
-				
-				//sb.kill();
-			},
-
-			stopGoing = function(fb, i) {
-				fb.body.angularVelocity = 0;
-			},
-
-			computeDamage = function(sb) {
-				sb.health--;
-			},
-
-			fireHandler = function(b, sb) {
-				b.kill();
-				computeDamage(sb);
-
-				if(sb.health == 0) {
+				if(Collisions.isBoarding(fb, sb)) {
+					console.log('is boarding!');
+					if(Collisions.aboardAllowed(fb, sb)) {
+						console.log('aboard allowed!');
+						endMatch = true;
+						winner = 'speedboat';
+					}
+				} else {
 					sb.kill();
-				}
 
-				if(!speedBoats.getFirstAlive()) {
-					alert('The freightboat won.');
+					if(currentlyControlled.id == 'speedboat') {
+						currentlyControlled = speedBoats.getFirstAlive();
+						instance.camera.follow(currentlyControlled);
+					}
+				}
+			},
+
+			computeDamage = function(boat) {
+				boat.health--;
+
+				if(boat.id == 'freightboat') {
+					var limit = boat.hoses.length;
+					boat.hoses[limit - (boat.health + 1)] = false;
+				}
+			},
+
+			fireHandler = function(bullet, boat) {
+				bullet.kill();
+				computeDamage(boat);
+
+				if(boat.health == 0 && boat.id == 'speedboat') {
+					boat.kill();
+
+					if(currentlyControlled.id == boat.id) {
+						currentlyControlled = speedBoats.getFirstAlive();
+					}
 				}
 			},
 
@@ -408,7 +411,7 @@
 
 			turn = function(evt, data) {
 				var toTurn = getToMove(data);
-				toTurn.body.angularVelocity = data.forward == 'true' || data.forward == true ? 200 : -200;
+				toTurn.body.angularVelocity = data.forward == 'true' || data.forward == true ? 100 : -100;
 			},
 
 			move = function(data) {
@@ -416,7 +419,7 @@
 
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
-					data.forward == 'true' || data.forward == true ? 300 : (-1 * 300),
+					data.forward == 'true' || data.forward == true ? 100 : (-1 * 100),
 					toMove.body.velocity
 				);
 			},
@@ -507,6 +510,7 @@
 
 			handleArrival = function(muelle, freightBoat) {
 				endMatch = true;
+				winner = 'freightboat';
 			};
 
 		return {
@@ -699,13 +703,13 @@
 					    		shoot: shoot,
 					    		change: change,
 					    		endMatch: endMatch,
-					    		winner: currentlyControlled.id
+					    		winner: winner
 					    	})
 				    	)
 			    	);
 
 			    	if(endMatch) {
-			    		Menu.View.showWinner(currentlyControlled.id);
+			    		Menu.View.showWinner(winner);
 			    	}
 		    	}
 			},
