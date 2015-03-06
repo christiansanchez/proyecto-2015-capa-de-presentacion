@@ -384,12 +384,10 @@
 			updateScore = function(game) {
 				if(!scoreFreightBoat) {
 					scoreFreightBoat = game.add.text(textConfig.freightBoat.x, 0, '', textConfig.style);
-					//scoreFreightBoat.anchor.setTo(0.5, 0.5);
 				}
 
 				if(!scoreSpeedBoat) {
 					scoreSpeedBoat = game.add.text(textConfig.speedBoat.x, 0, '', textConfig.style);
-					//scoreSpeedBoat.anchor.setTo(0.5, 0.5);
 				}
 
 				scoreFreightBoat.setText(getScoreFreightBoat(game));
@@ -430,8 +428,14 @@
 				boat.health--;
 
 				if(boat.id == 'freightboat') {
-					var limit = boat.hoses.length;
-					boat.hoses[limit - (boat.health + 1)] = false;
+					var upperLimit = freightBoat.hoses.length - 1,
+						hoseNumber = instance.rnd.integerInRange(0, upperLimit);
+
+					while(!boat.hoses[hoseNumber]) {
+						hoseNumber = instance.rnd.integerInRange(0, upperLimit);
+					}
+
+					boat.hoses[hoseNumber] = false;
 				}
 
 				updateScore(instance);
@@ -801,14 +805,6 @@
 				return speedBoats;
 			},
 
-			setFreightBoat: function(currentFreightboat) {
-				freightBoat = currentFreightboat;
-			},
-
-			setSpeedboats: function(currentSpeedBoats) {
-				speedBoats = currentSpeedBoats;
-			},
-
 			getCurrentlyControlled: function() {
 				return currentlyControlled;
 			},
@@ -904,12 +900,13 @@
 				}
 			},
 
-			getTextFreightBoat: function() {
-				return scoreFreightBoat;
+			endMatch: function(role) {
+				endMatch = true;
+				winner = role;
 			},
 
-			getTextSpeedBoat: function() {
-				return scoreSpeedBoat;
+			isStarted: function() {
+				return gameStarted;
 			}
 		} 
 
