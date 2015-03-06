@@ -71,6 +71,7 @@
 			 */
 			bulletTime 	= 0,
 			tabTime 	= 0,
+			bulletFreightBoatTime = 0,
 			fireTime 	= 0,
 			gameStarted = false,
 			playerData,
@@ -144,7 +145,7 @@
 				costas.create(1700, 0, 'costa-arriba');
 				costas.create(600, 1820, 'costa-abajo');
 				costas.create(1400, 1820, 'costa-abajo');
-				costas.create(1400, 1820, 'costa-derecha');
+				//costas.create(1400, 1820, 'costa-derecha');
 				costas.create(2820, 400, 'costa-derecha');
 				
 				for(var i = 0, coast; coast = costas.children[i]; i++) {
@@ -188,20 +189,25 @@
 
 			},
 
+			fireFreightBoat = function (disparosMangueras, paDonde) {
+				var bullet = bulletsFreightBoat.getFirstExists(false);
+				
+				if(bullet) {
+					sonidoDisparo.play();
+					bullet.reset(freightBoat.x + disparosMangueras, freightBoat.y);
+					//bullet.body.velocity.y = paDonde;
+					instance.physics.arcade.velocityFromAngle(freightBoat.angle + (paDonde * 90), 300, bullet.body.velocity);
+					bulletTime = instance.time.now + 350;
+					bullet.lifespan = 400;
+				}
+
+			}
+
 			fire = function(game, data) {
 				var toMove = getToMove(data),
-					bullet,
 					range = barcoRadar,
-					angle;
-
-				if(toMove.id == 'freightboat') {
-					bullet = bulletsFreightBoat.getFirstExists(false);
-					range = range / 2;
-					angle = toMove.angle + 90;
-			    } else {
-			    	bullet = bulletsSpeedBoat.getFirstExists(false);
+			    	bullet = bulletsSpeedBoat.getFirstExists(false),
 					angle = toMove.angle;
-			    }
 
 			    if(game.time.now > bulletTime) {
 			        if(bullet) {
@@ -388,7 +394,6 @@
 					}
 				} else {
 					sb.kill();
-					sb.health = 0;
 
 					updateScore(instance);
 
@@ -564,7 +569,29 @@
 				toMove.position.y = parseFloat(data.y);
 
 				if(data.shoot == 'true' || data.shoot ==  true) {
-					fire(instance, data);
+					if(toMove.id == 'speedboat') {
+						fire(instance, data);
+					} else {
+						if (instance.time.now > bulletTime) {
+							var disparosMangueras = -50,
+								paDonde = -1;
+							
+							for (var i = 0; i < 4; i++) {
+								fireFreightBoat(disparosMangueras, paDonde);						
+								disparosMangueras += 10;
+							}
+							
+							disparosMangueras = -50;
+							paDonde = 1;
+
+							for (var i = 0; i < 4; i++) {
+								fireFreightBoat(disparosMangueras, paDonde);						
+								disparosMangueras += 10;
+							}
+								
+							bulletTime = instance.time.now + 400;					
+						}
+					}
 				}
 			},
 
@@ -634,7 +661,12 @@
 				change = false;
 
 			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
-			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
+
+			    if(game.time.now > bulletFreightBoatTime) {
+			    	game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
+			    	bulletFreightBoatTime = game.time.now + 500;
+			    }
+
 			    game.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
 			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
 
@@ -722,7 +754,31 @@
 				    }
 
 				    if(fireButton.isDown) {
-				    	fire(game, currentlyControlled);
+				    	if(currentlyControlled.id == 'speedboat') {
+				    		fire(game, currentlyControlled);
+				    	} else {
+				    		//solo para barco carguero					
+							if (game.time.now > bulletTime) {						
+								var disparosMangueras = 35,
+									paDonde = -1;
+								
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(disparosMangueras, paDonde);						
+									disparosMangueras += 10;
+								}
+								
+								var disparosMangueras = 35;
+								paDonde = +1;
+
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(disparosMangueras, paDonde);						
+									disparosMangueras += 10;
+								}
+									
+								bulletTime = game.time.now + 400;						
+							}
+				    	}
+
 						somethingHapenned = true;
 						shoot = true;
 				    }
