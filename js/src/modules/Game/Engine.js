@@ -22,7 +22,7 @@
 				if(Matches.getPlayers(data.nombrePartida).length < playersLimit) {
 					Matches.addPlayer(data.nombrePartida, new Player(data));
 					$.modal.close();
-					Menu.View.showWaiting();
+					Menu.View.showWaiting(data.nombrePartida);
 				}
 
 				if(!role) {
