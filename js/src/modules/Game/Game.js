@@ -11,15 +11,18 @@
 			barcoRadar = 600,
 			rangoAtaque = barcoRadar / 2,
 			muelleLlegada,
+			scoreFreightBoat,
+			scoreSpeedBoat,
 			
 			endMatch = false,
 			winner,
 
-			counter = 0,
-			path 	= General.getAssetsPath(),
-			types 	= General.getAssetTypes(),
-			players	= Player.getPlayers(),
-			coords  = {},
+			counter 	= 0,
+			path 		= General.getAssetsPath(),
+			types 		= General.getAssetTypes(),
+			players		= Player.getPlayers(),
+			textConfig 	= Config.Text.get(),
+			coords  	= {},
 
 			sonidoDisparo,
 			backgroundMusic,
@@ -354,6 +357,51 @@
 			    }
 			},
 
+			getScoreFreightBoat = function(game) {
+				var score = 'Carguero: \n';
+
+				for(var x = 0; x < freightBoat.hoses.length; x++) {
+					score += '| ' + (freightBoat.hoses[x] ? 'O ' : 'X ');
+
+					if(x == (freightBoat.hoses.length / 2 - 1)) {
+						score += '|\n';
+					}
+				}
+
+				return score + '|';
+			},
+
+			getScoreSpeedBoat = function(game) {
+				var score = '\nLanchas: \n';
+
+				for(var i = 0, speedBoat; speedBoat = speedBoats.children[i]; i++) {
+					score += 'Lancha ' + (i + 1) + ': ' + speedBoat.health + '\n';
+				}
+
+				return score;
+			},
+
+			updateScore = function(game) {
+				if(!scoreFreightBoat) {
+					scoreFreightBoat = game.add.text(textConfig.freightBoat.x, 0, '', textConfig.style);
+					//scoreFreightBoat.anchor.setTo(0.5, 0.5);
+				}
+
+				if(!scoreSpeedBoat) {
+					scoreSpeedBoat = game.add.text(textConfig.speedBoat.x, 0, '', textConfig.style);
+					//scoreSpeedBoat.anchor.setTo(0.5, 0.5);
+				}
+
+				scoreFreightBoat.setText(getScoreFreightBoat(game));
+				scoreSpeedBoat.setText(getScoreSpeedBoat(game));
+
+				scoreFreightBoat.position.y = game.camera.height - scoreFreightBoat.height;
+				scoreSpeedBoat.position.y = game.camera.height - scoreSpeedBoat.height;
+
+				scoreFreightBoat.fixedToCamera = true;
+				scoreSpeedBoat.fixedToCamera = true;
+			},
+
 			collisionHandler = function(fb, sb) {
 				if(Collisions.isBoarding(fb, sb)) {
 					if(Collisions.aboardAllowed(fb, sb)) {
@@ -362,6 +410,8 @@
 					}
 				} else {
 					sb.kill();
+
+					updateScore(instance);
 
 					if(currentlyControlled && currentlyControlled.id == 'speedboat') {
 						currentlyControlled = speedBoats.getFirstAlive();
@@ -383,6 +433,8 @@
 					var limit = boat.hoses.length;
 					boat.hoses[limit - (boat.health + 1)] = false;
 				}
+
+				updateScore(instance);
 			},
 
 			fireHandler = function(bullet, boat) {
@@ -579,6 +631,7 @@
 				initSpeedboats(game);
 				initBullets(game);
 				addActions(game);
+				updateScore(game);
 
 				muelleLlegada = game.add.sprite(2880, 1950, 'port');
 				game.physics.arcade.enable(muelleLlegada);
@@ -849,6 +902,14 @@
 					$('.glyphicon-volume-off').show();
 					$('.glyphicon-volume-up').hide();
 				}
+			},
+
+			getTextFreightBoat: function() {
+				return scoreFreightBoat;
+			},
+
+			getTextSpeedBoat: function() {
+				return scoreSpeedBoat;
 			}
 		} 
 
