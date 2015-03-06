@@ -66,13 +66,28 @@
 			/**
 			 * To be checked why
 			 */
-			bulletTime = 0,
+			bulletTime 	= 0,
+			tabTime 	= 0,
+			fireTime 	= 0,
 			gameStarted = false,
 			playerData,
+
+			setAlpha = function(index) {
+				for(var i = 0, speedBoat; speedBoat = speedBoats.children[i]; i++) {
+					if(speedBoat.index == index) {
+						speedBoat.alpha = 1;
+						speedBoat.body.immovable = false;
+					} else {
+						speedBoat.alpha = 0.5;
+						speedBoat.body.immovable = true;
+					}
+				}
+			},
 
 			initCurrentlyControlled = function(role, game) {
 				if(!Config.Player.isFreightBoat(role)) {
 					currentlyControlled = speedBoats.children[0];
+					setAlpha(0);
 				} else {
 					currentlyControlled = freightBoat;
 				}
@@ -192,16 +207,15 @@
 			fire = function(game, data) {
 				var toMove = getToMove(data),
 					bullet,
-					range,
+					range = barcoRadar,
 					angle;
 
 				if(toMove.id == 'freightboat') {
 					bullet = bulletsFreightBoat.getFirstExists(false);
-					range = rangoAtaque / 2;
+					range = range / 2;
 					angle = toMove.angle + 90;
 			    } else {
 			    	bullet = bulletsSpeedBoat.getFirstExists(false);
-					range = rangoAtaque;
 					angle = toMove.angle;
 			    }
 
@@ -210,7 +224,7 @@
 			            //  And fire it
 			            sonidoDisparo.play();
 			            bullet.reset(toMove.x, toMove.y);
-			            bullet.lifeSpan = range;
+			            bullet.lifespan = range;
 			            game.physics.arcade.velocityFromAngle(angle, 300, bullet.body.velocity);
 			            bulletTime = game.time.now + 200;
 			        }
@@ -278,7 +292,7 @@
 						speedBoat.anchor.setTo(0.5, 0.5)
 						speedBoat.angle = game.rnd.angle();
 						speedBoat.angle = currentSpeedBoatData ? currentSpeedBoatData.angle : -90;
-						speedBoat.index = i;
+						speedBoat.index = speedBoats.children.length - 1;
 						speedBoat.id = 'speedboat';
 
 						game.physics.arcade.enable(speedBoat);
@@ -342,9 +356,7 @@
 
 			collisionHandler = function(fb, sb) {
 				if(Collisions.isBoarding(fb, sb)) {
-					console.log('is boarding!');
 					if(Collisions.aboardAllowed(fb, sb)) {
-						console.log('aboard allowed!');
 						endMatch = true;
 						winner = 'speedboat';
 					}
@@ -353,7 +365,13 @@
 
 					if(currentlyControlled && currentlyControlled.id == 'speedboat') {
 						currentlyControlled = speedBoats.getFirstAlive();
-						instance.camera.follow(currentlyControlled);
+
+						if(currentlyControlled) {
+							setAlpha(currentlyControlled.index);
+							instance.camera.follow(currentlyControlled);
+						} else {
+							instance.camera.follow(freightBoat);
+						}
 					}
 				}
 			},
@@ -380,6 +398,10 @@
 				}
 			},
 
+			killBullet = function(island, bullet) {
+				bullet.kill();
+			},
+
 			addActions = function(game) {
 				/**
 			     * Prevents the space from working in the browser
@@ -396,7 +418,7 @@
 			getToMove = function(data) {
 				var toMove;
 
-				if(data && data.id && data.index) {
+				if(data && data.id) {
 					if(data.id == 'speedboat') {
 						toMove = speedBoats.children[data.index];
 					} else {
@@ -426,6 +448,7 @@
 
 			changeCharacter = function(game, data) {
 				currentlyControlled = getToMove(data);
+				setAlpha(data.index);
 				game.camera.follow(currentlyControlled);
 			},
 
@@ -557,7 +580,7 @@
 				initBullets(game);
 				addActions(game);
 
-				muelleLlegada = game.add.sprite(2880, game.rnd.integerInRange(900, 1950), 'port');
+				muelleLlegada = game.add.sprite(2880, 1950, 'port');
 				game.physics.arcade.enable(muelleLlegada);
 				muelleLlegada.body.bounce.setTo(0, 0);
 				muelleLlegada.body.immovable = true;
@@ -579,22 +602,13 @@
 
 			    game.physics.arcade.collide(costas, speedBoats);
 			    game.physics.arcade.collide(costas, freightBoat);
+			    game.physics.arcade.collide(costas, bulletsSpeedBoat, killBullet, null, this);
+			    game.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
+			    game.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
+			    game.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
+			    game.physics.arcade.collide(speedBoats, speedBoats);
 
-			    /*if(currentlyControlled.body.touching.up ||
-			    	currentlyControlled.body.touching.down || 
-			    	currentlyControlled.body.touching.left ||
-			    	currentlyControlled.body.touching.right) {
-			    	console.log('is touching!', currentlyControlled.body.touching);
-			    }
-
-			    if(currentlyControlled.body.blocked.up || 
-			    	currentlyControlled.body.blocked.down || 
-			    	currentlyControlled.body.blocked.left || 
-			    	currentlyControlled.body.blocked.right) {
-			    	console.log('is blocked!', currentlyControlled.body.blocked);
-			    }*/
-
-			    if(!endMatch && currentlyControlled) {
+			    if(!endMatch && currentlyControlled && currentlyControlled.alive) {
 				    if(currentlyControlled.id == 'freightboat') {
 				    	for(var i = 0, currentSpeedBoat; currentSpeedBoat = speedBoats.children[i]; i++) {
 				    		distanciaBarcoLanchas(currentlyControlled, currentSpeedBoat, game);
@@ -676,37 +690,49 @@
 				    }
 
 				    if(currentlyControlled.id == 'speedboat' && changeCharacterButton.isDown) {
-				    	changeCharacter(game, {
-				    		id: currentlyControlled.id,
-				    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
-				    				currentlyControlled.index + 1 :
-				    				0 
-				    	});
+				    	if(game.time.now > tabTime) {
+
+				    		currentlyControlled.body.velocity.x = 0;
+							currentlyControlled.body.velocity.y = 0;
+							currentlyControlled.body.angularVelocity = 0;
+
+					    	changeCharacter(game, {
+					    		id: currentlyControlled.id,
+					    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
+					    				currentlyControlled.index + 1 :
+					    				0 
+					    	});
+
+					    	tabTime = game.time.now + 300;
+							somethingHappened = true;
+				    	}
 				    }
 			    } else {
 			    	somethingHapenned = true;
 			    }
 
 			    if(somethingHapenned) {
-			    	SocketManager.send(
-				    	Util.parseToSendWebSocketData(
-				    		endMatch ?
-				    			END_ACTION :
-				    			GAME_ACTION,
-				    		_.extend(motionData, {
-					    		id: currentlyControlled.id,
-					    		index: currentlyControlled.index,
-					    		x: currentlyControlled.position.x,
-					    		y: currentlyControlled.position.y,				    		
-					    		angle: currentlyControlled.angle,
-					    		nombrePartida: matchName, 
-					    		shoot: shoot,
-					    		change: change,
-					    		endMatch: endMatch,
-					    		winner: winner
-					    	})
-				    	)
-			    	);
+			    	if(currentlyControlled) {
+				    	SocketManager.send(
+					    	Util.parseToSendWebSocketData(
+					    		endMatch ?
+					    			END_ACTION :
+					    			GAME_ACTION,
+					    		_.extend(motionData, {
+						    		id: currentlyControlled.id,
+						    		index: currentlyControlled.index,
+						    		x: currentlyControlled.position.x,
+						    		y: currentlyControlled.position.y,				    		
+						    		angle: currentlyControlled.angle,
+						    		nombrePartida: matchName, 
+						    		shoot: shoot,
+						    		change: change,
+						    		endMatch: endMatch,
+						    		winner: winner
+						    	})
+					    	)
+				    	);
+			    	}
 
 			    	if(endMatch) {
 			    		Menu.View.showWinner(winner);

@@ -155,6 +155,7 @@
 
 				endGame = function() {
 					$('.game-actions').addClass('hidden');
+					$('[data-action="restart"]').removeClass('hidden');
 				},
 
 				showWinner = function(id) {
@@ -165,7 +166,7 @@
 							.html($(this))
 							.removeClass('hidden');
 
-						$('[data-action="restart"]').removeClass('hidden');
+						endGame();
 					});
 				},
 
