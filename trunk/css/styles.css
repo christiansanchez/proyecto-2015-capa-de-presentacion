@@ -60,3 +60,8 @@
 .winner-banner img {
 	width: 70%;
 }
+
+.jumbotron {
+	padding: 0;
+	background: none;
+}

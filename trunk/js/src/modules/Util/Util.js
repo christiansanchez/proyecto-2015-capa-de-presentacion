@@ -95,25 +95,19 @@
 			},
 
 			parseToSaveMatch: function(freightBoat, speedBoats, match) {
-				var obj = _.extend(match, {
+				var obj = _.extend(match && match.match ?
+							match.match :
+							match, {
 						posicionBarcoX: freightBoat.position.x.toFixed(2),
 						posicionBarcoY: freightBoat.position.y.toFixed(2),
 						anguloBarco: parseInt(freightBoat.angle)
 					}),
 					speedBoatsInfo = speedBoats.children;
 
-				for(var i = 1; i <= freightBoat.health; i++) {
-					obj['manguera' + i] = true;
+				for(var i = 0; i < freightBoat.hoses.length; i++) {
+					var hose = freightBoat.hoses[i];
+					obj['manguera' + (i + 1)] = hose;
 				}
-
-				var deadHose = Config.Boat.getDefaultConfig().stamina - (i - 1);
-
-				if(deadHose > 0) {
-					for(i = i - 1; i <= deadHose; i++) {
-						obj['manguera' + i] = false;
-					}
-				}
-
 
 				/**
 				 * Data speedBoats
