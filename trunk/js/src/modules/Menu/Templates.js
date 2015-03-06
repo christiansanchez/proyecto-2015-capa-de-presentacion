@@ -14,7 +14,8 @@
 
 				tplToEvents = {
 					getUnirsePartida: 'join',
-					getCargarPartida: 'load'
+					getCargarPartida: 'load',
+					abandonar: 'abandon'
 				},
 
 				cacheTemplates = function(wrapper) {

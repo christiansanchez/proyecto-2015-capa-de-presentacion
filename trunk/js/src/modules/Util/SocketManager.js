@@ -28,7 +28,11 @@
 					if(data.evt == 'dibujar') {
 						Game.updateBoat(data.data[0]);
 					} else if(data.evt == 'abandonar') {
-						Menu.View.showWinner(data.data[0].winner);
+						if(data.data && data.data[0].winner) {
+							Menu.View.showWinner(data.data[0].winner);
+						} else {
+							document.location.reload;
+						}
 					} else if(data.evt == 'setCargarPartida' || (data.data && dataForLoad(data))) {
 						var loadedMatch = Game.setMatchData(data.data);
 						pubsub.publish('setCargarPartida', loadedMatch.match);

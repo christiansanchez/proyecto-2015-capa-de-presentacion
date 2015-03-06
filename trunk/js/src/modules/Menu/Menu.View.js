@@ -66,8 +66,14 @@
 					}
 				},
 
-				showWaiting = function() {
-					$.modal($('#waiting-tpl').html());
+				showWaiting = function(nombrePartida) {
+					var tpl = _.template($('#waiting-tpl').html());
+					
+					$.modal(
+						tpl({
+							partida: nombrePartida
+						})
+					);
 				},
 
 				create = function(e) {
@@ -170,33 +176,49 @@
 					});
 				},
 
+				showAbandon = function(e) {
+					$.modal($('#abandon-tpl').html());
+				},
+
 				abandon = function(e) {
 					$.modal.close();
 
-					var match = Game.getMatch();
+					var match 	= Game.getMatch(),
+						data 	= $(e.target).data();
 
 					/**
 					 * For the case when the user creates a match and then
 					 * clicks on "Cancelar"
 					 */
 					if(!match) {
-						match = Matches.getMatches()[0];
+						match = Matches.getMatches()[data.partida];
 					}
 
-					var currentlyControlled = Game.getCurrentlyControlled;
+					if(Game.isStarted()) {
+						var currentlyControlled = Game.getCurrentlyControlled();
 
-					SocketManager.send(
-							Util.parseToSendWebSocketData(
-								'abandonar',
-								{
-									nombrePartida: match.nombrePartida,
-									endMatch: true,
-									winner: currentlyControlled.id == 'freightboat' ?
-												speedboat :
-												freightboat
-								}
-							)
-						);
+						SocketManager.send(
+								Util.parseToSendWebSocketData(
+									'abandonar',
+									{
+										nombrePartida: match.nombrePartida,
+										endMatch: true,
+										winner: currentlyControlled.id == 'freightboat' ?
+													'speedboat' :
+													'freightboat'
+									}
+								)
+							);
+					} else {
+						SocketManager.send(
+								Util.parseToSendWebSocketData(
+									'abandonar',
+									{
+										nombrePartida: match.nombrePartida
+									}
+								)
+							);
+					}
 				},
 
 				handleVolume = function(e) {
@@ -215,7 +237,8 @@
 					body.on('submit', '[data-action="create"]', create);
 					body.on('submit', '[data-action="join"]', join);
 					body.on('submit', '[data-action="load"]', load);
-					body.on('click', '[data-action="abandon"]', abandon);
+					body.on('click', '[data-action="showabandon"]', showAbandon);
+					body.on('submit', '[data-action="confirm-abandon"]', abandon);
 					body.on('click', '[data-action="save"]', save);
 					body.on('click', '[data-action="restart"]', restart);
 					

@@ -17,7 +17,7 @@
 								<button type="button" class="btn btn-primary navbar-btn" data-action="save">Guardar partida</button>
 							</li>
 							<li class="game-actions hidden">
-								<button type="button" class="btn btn-primary navbar-btn" data-action="abandon" data-target="abandon">Abandonar partida</button>
+								<button type="button" class="btn btn-primary navbar-btn" data-action="showabandon">Abandonar partida</button>
 							</li>
 							<li>
 								<button type="button" class="btn btn-primary hidden" data-action="restart">Reiniciar juego</button>
@@ -66,6 +66,7 @@
 	<script type="text/javascript" src="js/lib/jquery.simplemodal.1.4.4.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery-serializeForm.min.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.General.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Text.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.Map.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.Player.js"></script>
 	<script type="text/javascript" src="js/src/modules/Config/Config.Boat.js"></script>
@@ -191,17 +192,19 @@
 				<h2>¿Está seguro que desea abandonar la partida?</h2>
 				<legend>En caso de confirmar, tenga en cuenta que su contrincante será el ganador de la partida.</legend>
 				<hr>
-				<form class="form-horizontal" action="javascript:;" method="post">
+				<form class="form-horizontal" action="javascript:;" method="post" data-action="confirm-abandon">
 					<button type="submit" class="btn-sm btn-success">Abandonar</button>
 					<button type="button" class="btn-sm btn-error" data-action="back">Continuar</button>
 				</form>
 			</div>
 		</script>
-		<script id="waiting-tpl" type="underscore/template" data-action="abandon">
+		<script id="waiting-tpl" type="underscore/template">
 			<div class="col-lg-12 step step-2">
 				<h2>Esperando contrincante</h2>
 				<hr>
-				<button type="button" class="btn-sm btn-error" data-action="abandon">Cancelar</button>
+				<form action="javascript:;" data-action="confirm-abandon" data-partida="<%= partida %>">
+					<button type="submit" class="btn-sm btn-error">Cancelar</button>
+				</form>
 			</div>
 		</script>
 	</div>
