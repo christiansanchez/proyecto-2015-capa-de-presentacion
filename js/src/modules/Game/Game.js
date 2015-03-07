@@ -590,32 +590,34 @@
 			updateBoat = function(data) {
 				var toMove = getToMove(data);
 
-				toMove.angle = parseFloat(data.angle);
-				toMove.position.x = parseFloat(data.x);
-				toMove.position.y = parseFloat(data.y);
+				if(toMove) {
+					toMove.angle = parseFloat(data.angle);
+					toMove.position.x = parseFloat(data.x);
+					toMove.position.y = parseFloat(data.y);
 
-				if(data.shoot == 'true' || data.shoot ==  true) {
-					if(toMove.id == 'speedboat') {
-						fire(instance, data);
-					} else {
-						if(instance.time.now > bulletTime) {
-							var disparosMangueras = -50,
-								paDonde = -1.5;
-							
-							for (var i = 0; i < 4; i++) {
-								fireFreightBoat(disparosMangueras, paDonde);						
-								disparosMangueras += 10;
-							}
-							
-							disparosMangueras = -50;
-							paDonde = 1.5;
-
-							for (var i = 0; i < 4; i++) {
-								fireFreightBoat(disparosMangueras, paDonde);						
-								disparosMangueras += 10;
-							}
+					if(data.shoot == 'true' || data.shoot ==  true) {
+						if(toMove.id == 'speedboat') {
+							fire(instance, data);
+						} else {
+							if(instance.time.now > bulletTime) {
+								var disparosMangueras = -50,
+									paDonde = -1.5;
 								
-							bulletTime = instance.time.now + 400;					
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(disparosMangueras, paDonde);						
+									disparosMangueras += 10;
+								}
+								
+								disparosMangueras = -50;
+								paDonde = 1.5;
+
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(disparosMangueras, paDonde);						
+									disparosMangueras += 10;
+								}
+									
+								bulletTime = instance.time.now + 400;					
+							}
 						}
 					}
 				}
