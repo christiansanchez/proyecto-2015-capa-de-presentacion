@@ -248,7 +248,6 @@
 
 					$(window).on('beforeunload', function() {
 						abandon();
-						return '¿Desea cerrar?';
 					});
 				},
 
