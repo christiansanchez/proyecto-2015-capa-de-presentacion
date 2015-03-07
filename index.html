@@ -60,37 +60,6 @@
 
     	</div>
 	</body>
-	<script type="text/javascript" src="js/lib/underscore-min.js"></script>
-	<script type="text/javascript" src="js/lib/phaser.min.js"></script>
-	<script type="text/javascript" src="js/lib/jquery-2.1.3.js"></script>
-	<script type="text/javascript" src="js/lib/jquery.pubsub.js"></script>
-	<script type="text/javascript" src="js/lib/jquery.simplemodal.1.4.4.min.js"></script>
-	<script type="text/javascript" src="js/lib/jquery-serializeForm.min.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.General.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Text.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Map.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Player.js"></script>
-	<script type="text/javascript" src="js/src/modules/Config/Config.Boat.js"></script>
-	<script type="text/javascript" src="js/src/modules/Util/Util.js"></script>
-	<script type="text/javascript" src="js/src/modules/Util/SocketManager.Methods.js"></script>
-	<script type="text/javascript" src="js/src/modules/Util/SocketManager.js"></script>
-	<script type="text/javascript" src="js/src/modules/Util/Gateway.Methods.js"></script>
-	<script type="text/javascript" src="js/src/modules/Util/Gateway.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Templates.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Matches.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Assets.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Boat.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Player.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Engine.Events.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Engine.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Game.Map.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Game.Collisions.js"></script>
-	<script type="text/javascript" src="js/src/modules/Game/Game.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.Actions.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.Validation.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.View.js"></script>
-	<script type="text/javascript" src="js/src/modules/Menu/Menu.js"></script>
-	<script type="text/javascript" src="js/src/modules/Test/Test.js"></script>
 	<!-- Templates for the menu -->
 	<div id="tpl-wrapper">
 		<script id="create-tpl" type="underscore/template" data-action="create">
@@ -191,7 +160,7 @@
 		<script id="abandon-tpl" type="underscore/template" data-action="abandon">
 			<div class="col-lg-12 step step-2">
 				<h2>¿Está seguro que desea abandonar la partida?</h2>
-				<legend>En caso de confirmar, tenga en cuenta que su contrincante será el ganador de la partida.</legend>
+				<p>En caso de confirmar, tenga en cuenta que su contrincante será el ganador de la partida.</p>
 				<hr>
 				<form class="form-horizontal" action="javascript:;" method="post" data-action="confirm-abandon">
 					<button type="submit" class="btn-sm btn-success">Abandonar</button>
@@ -208,7 +177,43 @@
 				</form>
 			</div>
 		</script>
+		<script id="error-tpl" type="underscore/template">
+			<div class="error">
+				<%= message %>
+			</div>
+		</script>
 	</div>
+	<script type="text/javascript" src="js/lib/underscore-min.js"></script>
+	<script type="text/javascript" src="js/lib/phaser.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery-2.1.3.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.pubsub.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.simplemodal.1.4.4.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery-serializeForm.min.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.General.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Text.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Map.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Player.js"></script>
+	<script type="text/javascript" src="js/src/modules/Config/Config.Boat.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/Util.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/SocketManager.Methods.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/SocketManager.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/Gateway.Methods.js"></script>
+	<script type="text/javascript" src="js/src/modules/Util/Gateway.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Templates.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Matches.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Assets.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Boat.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Player.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Engine.Events.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Engine.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Game.Map.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Game.Collisions.js"></script>
+	<script type="text/javascript" src="js/src/modules/Game/Game.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.Actions.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.Validation.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.View.js"></script>
+	<script type="text/javascript" src="js/src/modules/Menu/Menu.js"></script>
+	<script type="text/javascript" src="js/src/modules/Test/Test.js"></script>
 	<script type="text/javascript">
 		(function() {
 

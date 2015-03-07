@@ -13,6 +13,7 @@
 			muelleLlegada,
 			scoreFreightBoat,
 			scoreSpeedBoat,
+			scorePositionSet = false,
 			
 			endMatch = false,
 			winner,
@@ -188,20 +189,35 @@
 
 			},
 
+			fireFreightBoat = function (paDonde) {
+				var bullet = bulletsFreightBoat.getFirstExists(false);
+				
+				if(bullet) {
+					sonidoDisparo.play();
+
+					/*if(freightBoat.rotation > 0 && freightBoat.rotation <= 1.5) {
+						bullet.reset(freightBoat.x + paraX, freightBoat.y + paraY);	
+					} else if(freightBoat.rotation > 1.5 && freightBoat.rotation <= 3) {
+						bullet.reset(freightBoat.x + paraX, freightBoat.y);
+					} else if(freightBoat.rotation > -3 && freightBoat.rotation <= -1.5) {
+						bullet.reset(freightBoat.x - paraX, freightBoat.y - paraY);
+					} else if(freightBoat.rotation > -1.5 && freightBoat.rotation < 0) {
+						bullet.reset(freightBoat.x + paraX, freightBoat.y - paraY);
+					}*/
+
+					bullet.reset(freightBoat.x, freightBoat.y);	
+					instance.physics.arcade.velocityFromRotation(freightBoat.rotation + paDonde, 300, bullet.body.velocity);
+					bulletTime = instance.time.now + 350;
+					bullet.lifespan = 400;
+				}
+
+			},
+
 			fire = function(game, data) {
 				var toMove = getToMove(data),
-					bullet,
 					range = barcoRadar,
-					angle;
-
-				if(toMove.id == 'freightboat') {
-					bullet = bulletsFreightBoat.getFirstExists(false);
-					range = range / 2;
-					angle = toMove.angle + 90;
-			    } else {
-			    	bullet = bulletsSpeedBoat.getFirstExists(false);
+			    	bullet = bulletsSpeedBoat.getFirstExists(false),
 					angle = toMove.angle;
-			    }
 
 			    if(game.time.now > bulletTime) {
 			        if(bullet) {
@@ -362,7 +378,7 @@
 			},
 
 			updateScore = function(game) {
-				if(!scoreFreightBoat) {
+				if(!scoreFreightBoat) {	
 					scoreFreightBoat = game.add.text(textConfig.freightBoat.x, 0, '', textConfig.style);
 				}
 
@@ -373,11 +389,15 @@
 				scoreFreightBoat.setText(getScoreFreightBoat(game));
 				scoreSpeedBoat.setText(getScoreSpeedBoat(game));
 
-				scoreFreightBoat.position.y = game.camera.height - scoreFreightBoat.height;
-				scoreSpeedBoat.position.y = game.camera.height - scoreSpeedBoat.height;
+				if(!scorePositionSet) {
+					scoreFreightBoat.position.y = game.camera.height - scoreFreightBoat.height;
+					scoreSpeedBoat.position.y = game.camera.height - scoreSpeedBoat.height;
 
-				scoreFreightBoat.fixedToCamera = true;
-				scoreSpeedBoat.fixedToCamera = true;
+					scoreFreightBoat.fixedToCamera = true;
+					scoreSpeedBoat.fixedToCamera = true;
+
+					scorePositionSet = true;
+				}
 			},
 
 			collisionHandler = function(fb, sb) {
@@ -564,7 +584,29 @@
 				toMove.position.y = parseFloat(data.y);
 
 				if(data.shoot == 'true' || data.shoot ==  true) {
-					fire(instance, data);
+					if(toMove.id == 'speedboat') {
+						fire(instance, data);
+					} else {
+						if(instance.time.now > bulletTime) {
+							var disparosMangueras = -50,
+								paDonde = -1.5;
+							
+							for (var i = 0; i < 4; i++) {
+								fireFreightBoat(disparosMangueras, paDonde);						
+								disparosMangueras += 10;
+							}
+							
+							disparosMangueras = -50;
+							paDonde = 1.5;
+
+							for (var i = 0; i < 4; i++) {
+								fireFreightBoat(disparosMangueras, paDonde);						
+								disparosMangueras += 10;
+							}
+								
+							bulletTime = instance.time.now + 400;					
+						}
+					}
 				}
 			},
 
@@ -722,7 +764,28 @@
 				    }
 
 				    if(fireButton.isDown) {
-				    	fire(game, currentlyControlled);
+				    	if(currentlyControlled.id == 'speedboat') {
+				    		fire(game, currentlyControlled);
+				    	} else {
+				    		//solo para barco carguero					
+							if (game.time.now > bulletTime) {						
+								var paDonde = -1.5;
+								
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(paDonde);						
+									paDonde += 2;
+								}
+								
+								paDonde = 1.5;
+								
+								for (var i = 0; i < 4; i++) {
+									fireFreightBoat(paDonde);						
+									paDonde += 2;
+								}
+									
+								bulletTime = game.time.now + 400;						
+							}
+				    	}
 						somethingHapenned = true;
 						shoot = true;
 				    }
