@@ -408,7 +408,7 @@
 						winner = 'speedboat';
 					}
 				} else {
-					sb.kill();
+					sb.destroy();
 					sb.health = 0;
 					sb.alive = false;
 
@@ -482,9 +482,8 @@
 						toMove = speedBoats.children[data.index];
 						var i = 0;
 
-						while(!toMove.alive && i < speedBoats.children[i]) {
-							toMove = speedBoats.children[i];
-							i++;
+						if(!toMove.alive) {
+							toMove.speedBoats.getFirstAlive();
 						}
 
 					} else {
