@@ -209,7 +209,7 @@
 									}
 								)
 							);
-					} else {
+					} else if(match) {
 						SocketManager.send(
 								Util.parseToSendWebSocketData(
 									'abandonar',
@@ -245,6 +245,11 @@
 					body.on('click', '[data-action="back"]', back);
 					body.on('click', '[data-volume="off"]', handleVolume);
 					body.on('click', '[data-volume="on"]', handleVolume);
+
+					$(window).on('beforeunload', function() {
+						abandon();
+						return '¿Desea cerrar?';
+					});
 				},
 
 				showModal: showModal,
