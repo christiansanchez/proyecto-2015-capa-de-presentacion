@@ -482,8 +482,8 @@
 						toMove = speedBoats.children[data.index];
 						var i = 0;
 
-						if(!toMove.alive) {
-							toMove.speedBoats.getFirstAlive();
+						if(toMove && !toMove.alive) {
+							toMove = speedBoats.getFirstAlive();
 						}
 
 					} else {
