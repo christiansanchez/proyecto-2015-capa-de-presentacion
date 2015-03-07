@@ -5,6 +5,7 @@
 		var counter = 0,
 			GAME_ACTION = 'dibujar',
 			END_ACTION = 'abandonar',
+			DEFAULT_SPEED = Config.Player.getDefaultSpeed(),
 			instance,
 			matchName,
 			match,
@@ -409,6 +410,7 @@
 				} else {
 					sb.kill();
 					sb.health = 0;
+					sb.alive = false;
 
 					updateScore(instance);
 
@@ -478,6 +480,13 @@
 				if(data && data.id) {
 					if(data.id == 'speedboat') {
 						toMove = speedBoats.children[data.index];
+						var i = 0;
+
+						while(!toMove.alive && i < speedBoats.children[i]) {
+							toMove = speedBoats.children[i];
+							i++;
+						}
+
 					} else {
 						toMove = freightBoat;
 					}
@@ -494,7 +503,10 @@
 			},
 
 			move = function(data) {
-				var toMove = getToMove(data);
+				var toMove = getToMove(data),
+					speed = toMove.id == 'speedboat' ?
+								DEFAULT_SPEED * 1.3 :
+								DEFAULT_SPEED;
 
 				instance.physics.arcade.velocityFromAngle(
 					toMove.angle, 
