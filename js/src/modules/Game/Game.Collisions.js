@@ -36,7 +36,7 @@
 		return {
 			isBoarding: function(freightBoat, speedBoat) {
 				return Math.abs(freightBoat.angle - boardingPossibilities.minus) <= Math.abs(speedBoat.angle) && 
-						Math.abs(freightBoat.angle + boardingPossibilities.plus) >= Math.abs(speedBoat.angle) 
+						Math.abs(freightBoat.angle + boardingPossibilities.plus) >= Math.abs(speedBoat.angle);
 			},
 
 			aboardAllowed: function(freightBoat, speedBoat) {
