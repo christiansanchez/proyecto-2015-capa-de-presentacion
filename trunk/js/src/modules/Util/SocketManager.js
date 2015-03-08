@@ -24,9 +24,7 @@
 
 				ws.onmessage = function(evt) {
 					var data = Util.parseWebSocketData(evt.data);
-
-					console.log('hoses: ', data.data[0].hoses);
-
+					
 					if(data.evt == 'dibujar') {
 						Game.updateBoat(data.data[0]);
 					} else if(data.evt == 'abandonar') {

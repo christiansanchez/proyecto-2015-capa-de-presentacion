@@ -404,6 +404,7 @@
 						winner = 'speedboat';
 					}
 				} else {
+					console.log('Mata la lancha: ', sb.index);
 					sb.kill();
 					sb.health = 0;
 					sb.alive = false;
@@ -421,6 +422,8 @@
 						}
 					}
 				}
+
+				updateScore(instance);
 			},
 
 			computeDamage = function(boat) {
@@ -438,6 +441,8 @@
 
 					boat.hoses[hoseNumber] = false;
 				}
+
+				updateScore(instance);
 			},
 
 			fireHandler = function(bullet, boat) {
@@ -593,8 +598,6 @@
 			updateBoat = function(data) {
 				var toMove = getToMove(data);
 
-				freightBoat.hoses = JSON.parse(data.hoses);
-
 				if(toMove) {
 					toMove.angle = parseFloat(data.angle);
 					toMove.position.x = parseFloat(data.x);
@@ -604,6 +607,10 @@
 						if(toMove.id == 'speedboat') {
 							fire(instance, data);
 						} else {
+							if(data.hoses) {
+								freightBoat.hoses = JSON.parse(data.hoses);
+							}
+
 							if (instance.time.now > bulletTime) {						
 								var paDonde = -1.9;
 								
@@ -876,8 +883,6 @@
 						    	})
 					    	)
 				    	);
-
-				    	
 			    	}
 
 			    	if(endMatch) {
