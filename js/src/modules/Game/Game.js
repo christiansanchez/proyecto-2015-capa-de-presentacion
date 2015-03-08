@@ -405,7 +405,7 @@
 					}
 				} else {
 					console.log('Mata la lancha: ', sb.index);
-					sb.kill();
+					/*sb.kill();
 					sb.health = 0;
 					sb.alive = false;
 
@@ -420,7 +420,7 @@
 						} else {
 							instance.camera.follow(freightBoat);
 						}
-					}
+					}*/
 				}
 
 				updateScore(instance);
@@ -449,10 +449,12 @@
 				bullet.kill();
 				computeDamage(boat);
 
-				if(boat.health == 0 && boat.id == 'speedboat') {
+				if(boat.health == 0 && 
+					boat.id == 'speedboat') {
 					boat.kill();
 
-					if(currentlyControlled.id == boat.id) {
+					if(currentlyControlled.id == boat.id && 
+						currentlyControlled.index == boat.index) {
 						currentlyControlled = speedBoats.getFirstAlive();
 
 						if(currentlyControlled) {
@@ -581,7 +583,7 @@
 						game.physics.arcade.distanceBetween(obj1, speedBoats.children[1]) > barcoRadar ||
 						game.physics.arcade.distanceBetween(obj1, speedBoats.children[2]) > barcoRadar) {
 							obj2.alpha = 0.0;
-					}						
+					}
 				}
 			},
 
@@ -850,6 +852,12 @@
 								changeCharacter(game, {
 						    		id: currentlyControlled.id,
 						    		index: 1
+						    	});
+							} else if(currentlyControlled.index == 1  && !speedBoats.children[2].alive &&
+								speedBoats.children[0].alive) {
+								changeCharacter(game, {
+						    		id: currentlyControlled.id,
+						    		index: 0
 						    	});
 							}
 
