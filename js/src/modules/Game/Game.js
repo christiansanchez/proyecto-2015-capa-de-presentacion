@@ -605,14 +605,12 @@
 
 					if(data.shoot == 'true' || data.shoot ==  true) {
 						if(toMove.id == 'speedboat') {
-							fire(instance, data);
-						} else {
-							if(data.hoses) {
-								freightBoat.hoses = JSON.parse(data.hoses);
-							}
-
+				    		fire(instance, toMove);
+				    	} else {
+				    		//solo para barco carguero					
 							if (instance.time.now > bulletTime) {						
-								var paDonde = -1.9;
+								var paDonde = -1.9, 
+									derecha = true;
 								
 								for (var i = 0; i < 4; i++) {
 									if(freightBoat.hoses[i]) {
@@ -632,9 +630,11 @@
 									paDonde -= 0.2;
 								}
 									
-								bulletTime = instance.time.now + 400;				
+								bulletTime = instance.time.now + 400;						
 							}
-						}
+				    	}
+						somethingHapenned = true;
+						shoot = true;
 					}
 				}
 			},
