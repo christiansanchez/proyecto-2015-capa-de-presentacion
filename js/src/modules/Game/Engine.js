@@ -112,6 +112,10 @@
 
 			getRole: function() {
 				return role;
+			},
+
+			resetRole: function() {
+				role = null;
 			}
 		}
 
