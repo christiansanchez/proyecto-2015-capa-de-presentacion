@@ -429,17 +429,8 @@
 			computeDamage = function(boat) {
 				boat.health--;
 
-				if(boat.id == 'freightboat') {
-					var upperLimit 	= freightBoat.hoses.length - 1,
-						hoseNumber 	= instance.rnd.integerInRange(0, upperLimit),
-						i 			= 0;
-
-					while(!boat.hoses[hoseNumber] && i < 50) {
-						hoseNumber = instance.rnd.integerInRange(0, upperLimit);
-						i++;
-					}
-
-					boat.hoses[hoseNumber] = false;
+				if(boat.id == 'freightboat' && boat.health >= 0) {
+					boat.hoses[freightBoat.health] = false;
 				}
 
 				updateScore(instance);

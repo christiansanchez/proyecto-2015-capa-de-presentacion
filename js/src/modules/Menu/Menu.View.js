@@ -201,7 +201,9 @@
 								Util.parseToSendWebSocketData(
 									'abandonar',
 									{
-										nombrePartida: match.nombrePartida,
+										nombrePartida: match.match ? 
+														match.match.nombrePartida :
+														match.nombrePartida,
 										endMatch: true,
 										winner: currentlyControlled.id == 'freightboat' ?
 													'speedboat' :
@@ -247,10 +249,6 @@
 					body.on('click', '[data-action="back"]', back);
 					body.on('click', '[data-volume="off"]', handleVolume);
 					body.on('click', '[data-volume="on"]', handleVolume);
-
-					$(window).on('beforeunload', function() {
-						abandon();
-					});
 				},
 
 				showModal: showModal,
