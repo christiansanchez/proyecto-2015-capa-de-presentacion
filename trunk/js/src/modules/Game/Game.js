@@ -624,7 +624,7 @@
 						}
 					}
 
-					instance.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
+					/*instance.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
 				    instance.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
 				    instance.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
 				    instance.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
@@ -634,7 +634,7 @@
 				    instance.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
 				    instance.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
 				    instance.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
-				    instance.physics.arcade.collide(speedBoats, speedBoats);
+				    instance.physics.arcade.collide(speedBoats, speedBoats);*/
 				}
 			},
 
