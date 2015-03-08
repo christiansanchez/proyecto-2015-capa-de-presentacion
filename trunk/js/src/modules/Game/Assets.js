@@ -6,7 +6,7 @@
 			images = [
 				{
 					tag: 'sea', 
-					file: 'sea-pattern.jpg',
+					file: 'sea-pattern.png',
 					type: types.SPRITE
 				},
 				{
@@ -18,8 +18,12 @@
 					file: 'speedboat.png'
 				},
 				{
-					tag: 'bullet',
-					file: 'bullet.png'
+					tag: 'bullet-freightboat',
+					file: 'bullet-freightboat.png'
+				},
+				{
+					tag: 'bullet-speedboat',
+					file: 'bullet-speedboat.png'
 				},
 				{
 					tag: 'isla',
