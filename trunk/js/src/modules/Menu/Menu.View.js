@@ -218,6 +218,8 @@
 									}
 								)
 							);
+
+						Engine.resetRole();
 					}
 				},
 

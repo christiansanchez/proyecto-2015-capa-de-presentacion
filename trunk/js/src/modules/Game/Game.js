@@ -408,8 +408,6 @@
 					sb.health = 0;
 					sb.alive = false;
 
-					updateScore(instance);
-
 					if(currentlyControlled && 
 						currentlyControlled.id == 'speedboat' &&
 						currentlyControlled.index == sb.index) {
@@ -429,17 +427,17 @@
 				boat.health--;
 
 				if(boat.id == 'freightboat') {
-					var upperLimit = freightBoat.hoses.length - 1,
-						hoseNumber = instance.rnd.integerInRange(0, upperLimit);
+					var upperLimit 	= freightBoat.hoses.length - 1,
+						hoseNumber 	= instance.rnd.integerInRange(0, upperLimit),
+						i 			= 0;
 
-					while(!boat.hoses[hoseNumber]) {
+					while(!boat.hoses[hoseNumber] && i < 50) {
 						hoseNumber = instance.rnd.integerInRange(0, upperLimit);
+						i++;
 					}
 
 					boat.hoses[hoseNumber] = false;
 				}
-
-				updateScore(instance);
 			},
 
 			fireHandler = function(bullet, boat) {
@@ -595,6 +593,8 @@
 			updateBoat = function(data) {
 				var toMove = getToMove(data);
 
+				freightBoat.hoses = JSON.parse(data.hoses);
+
 				if(toMove) {
 					toMove.angle = parseFloat(data.angle);
 					toMove.position.x = parseFloat(data.x);
@@ -608,33 +608,27 @@
 								var paDonde = -1.9;
 								
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(paDonde, true);	
+									if(freightBoat.hoses[i]) {
+										fireFreightBoat(paDonde, derecha);
+									}
 									paDonde += 0.2;
 								}
 								
 								paDonde = 1.9;
-								
+								derecha = false;
+
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(paDonde, false);					
+									if(freightBoat.hoses[i + 4]) {
+										fireFreightBoat(paDonde, derecha);	
+									}
+
 									paDonde -= 0.2;
 								}
 									
-								bulletTime = instance.time.now + 400;						
+								bulletTime = instance.time.now + 400;				
 							}
 						}
 					}
-
-					/*instance.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
-				    instance.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
-				    instance.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
-				    instance.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
-				    instance.physics.arcade.collide(costas, speedBoats);
-				    instance.physics.arcade.collide(costas, freightBoat);
-				    instance.physics.arcade.collide(costas, bulletsSpeedBoat, killBullet, null, this);
-				    instance.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
-				    instance.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
-				    instance.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
-				    instance.physics.arcade.collide(speedBoats, speedBoats);*/
 				}
 			},
 
@@ -852,13 +846,6 @@
 						    	});
 							}
 
-					    	// changeCharacter(game, {
-					    	// 	id: currentlyControlled.id,
-					    	// 	index: speedBoats.children.length - 1 > currentlyControlled.index ?
-					    	// 			currentlyControlled.index + 1 :
-					    	// 			0 
-					    	// });
-
 					    	tabTime = game.time.now + 300;
 							somethingHappened = true;
 				    	}
@@ -878,20 +865,25 @@
 						    		id: currentlyControlled.id,
 						    		index: currentlyControlled.index,
 						    		x: currentlyControlled.position.x,
-						    		y: currentlyControlled.position.y,				    		
+						    		y: currentlyControlled.position.y,			    		
 						    		angle: currentlyControlled.angle,
 						    		nombrePartida: matchName, 
 						    		shoot: shoot,
 						    		change: change,
 						    		endMatch: endMatch,
-						    		winner: winner
+						    		winner: winner,
+						    		hoses: JSON.stringify(freightBoat.hoses)
 						    	})
 					    	)
 				    	);
+
+				    	
 			    	}
 
 			    	if(endMatch) {
 			    		Menu.View.showWinner(winner);
+			    	} else {
+			    		updateScore(instance);
 			    	}
 		    	}
 			},
