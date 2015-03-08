@@ -27,6 +27,7 @@
 			coords  	= {},
 
 			sonidoDisparo,
+			sonidoDisparoBarco,
 			backgroundMusic,
 			radar,
 
@@ -111,6 +112,7 @@
 				}
 
 				game.load.audio('disparo', 'assets/disparo.ogg');
+				game.load.audio('disparoBarco', 'assets/sonidoDisparoBarco.ogg');
 				game.load.audio('backgroundMusic', 'assets/backgroundMusic.ogg');
 				game.load.audio('radar', 'assets/radar.ogg');
 			},
@@ -122,6 +124,10 @@
 				backgroundMusic.play();
 
 				sonidoDisparo = game.add.audio('disparo');
+				sonidoDisparo.volume = 0.9; //Cambiar el volumen  
+				sonidoDisparo.allowMultiple = true;
+
+				sonidoDisparoBarco = game.add.audio('disparoBarco');
 				sonidoDisparo.volume = 0.9; //Cambiar el volumen  
 				sonidoDisparo.allowMultiple = true;
 				
@@ -157,10 +163,6 @@
 
 				if(match.tipoMapa == 'ISLAS' || (match.match && match.match.tipoMapa == 'ISLAS')) {
 					island = game.add.group();
-					//islandPiece = island.create(100, 400, 'isla');
-					//game.physics.arcade.enable(islandPiece)
-					//islandPiece.body.bounce.setTo(0, 0);
-					//islandPiece.body.immovable = true;
 
 					island.create(590, 50, 'isla');
 					island.create(720, 380, 'isla');
@@ -190,22 +192,17 @@
 
 			},
 
-			fireFreightBoat = function (paDonde) {
+			fireFreightBoat = function (paDonde, derecha) {
 				var bullet = bulletsFreightBoat.getFirstExists(false);
 				
 				if(bullet) {
-					sonidoDisparo.play();
+					if(derecha) {
+						bullet.rotation = freightBoat.rotation + 3;
+					} else {
+						bullet.rotation = freightBoat.rotation;
+					}
 
-					/*if(freightBoat.rotation > 0 && freightBoat.rotation <= 1.5) {
-						bullet.reset(freightBoat.x + paraX, freightBoat.y + paraY);	
-					} else if(freightBoat.rotation > 1.5 && freightBoat.rotation <= 3) {
-						bullet.reset(freightBoat.x + paraX, freightBoat.y);
-					} else if(freightBoat.rotation > -3 && freightBoat.rotation <= -1.5) {
-						bullet.reset(freightBoat.x - paraX, freightBoat.y - paraY);
-					} else if(freightBoat.rotation > -1.5 && freightBoat.rotation < 0) {
-						bullet.reset(freightBoat.x + paraX, freightBoat.y - paraY);
-					}*/
-
+					sonidoDisparoBarco.play();
 					bullet.reset(freightBoat.x, freightBoat.y);	
 					instance.physics.arcade.velocityFromRotation(freightBoat.rotation + paDonde, 300, bullet.body.velocity);
 					bulletTime = instance.time.now + 350;
@@ -222,8 +219,7 @@
 
 			    if(game.time.now > bulletTime) {
 			        if(bullet) {
-			            //  And fire it
-			            sonidoDisparo.play();
+			        	sonidoDisparo.play();
 			            bullet.reset(toMove.x, toMove.y);
 			            bullet.lifespan = range;
 			            game.physics.arcade.velocityFromAngle(angle, 300, bullet.body.velocity);
@@ -326,7 +322,7 @@
 			    bulletsFreightBoat.physicsBodyType = Phaser.Physics.ARCADE;
 
 			    for(var i = 0; i < bulletQty; i++) {
-				    var currentBullet = bulletsFreightBoat.create(-20, -20, 'bullet');
+				    var currentBullet = bulletsFreightBoat.create(-20, -20, 'bullet-freightboat');
 
 				    currentBullet.anchor.x = 0.5;
 				    currentBullet.anchor.y = 0.5;
@@ -342,7 +338,7 @@
 			    bulletsSpeedBoat.physicsBodyType = Phaser.Physics.ARCADE;
 
 			    for(var i = 0; i < bulletQty; i++) {
-				    var currentBullet = bulletsSpeedBoat.create(-20, -20, 'bullet');
+				    var currentBullet = bulletsSpeedBoat.create(-20, -20, 'bullet-speedboat');
 
 				    currentBullet.anchor.x = 0.5;
 				    currentBullet.anchor.y = 0.5;
@@ -408,13 +404,15 @@
 						winner = 'speedboat';
 					}
 				} else {
-					sb.destroy();
+					sb.kill();
 					sb.health = 0;
 					sb.alive = false;
 
 					updateScore(instance);
 
-					if(currentlyControlled && currentlyControlled.id == 'speedboat') {
+					if(currentlyControlled && 
+						currentlyControlled.id == 'speedboat' &&
+						currentlyControlled.index == sb.index) {
 						currentlyControlled = speedBoats.getFirstAlive();
 
 						if(currentlyControlled) {
@@ -453,6 +451,13 @@
 
 					if(currentlyControlled.id == boat.id) {
 						currentlyControlled = speedBoats.getFirstAlive();
+
+						if(currentlyControlled) {
+							setAlpha(currentlyControlled.index);
+							instance.camera.follow(currentlyControlled);
+						} else {
+							instance.camera.follow(freightBoat);
+						}
 					}
 				}
 			},
@@ -599,27 +604,37 @@
 						if(toMove.id == 'speedboat') {
 							fire(instance, data);
 						} else {
-							if(instance.time.now > bulletTime) {
-								var disparosMangueras = -50,
-									paDonde = -1.5;
+							if (instance.time.now > bulletTime) {						
+								var paDonde = -1.9;
 								
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(disparosMangueras, paDonde);						
-									disparosMangueras += 10;
+									fireFreightBoat(paDonde, true);	
+									paDonde += 0.2;
 								}
 								
-								disparosMangueras = -50;
-								paDonde = 1.5;
-
+								paDonde = 1.9;
+								
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(disparosMangueras, paDonde);						
-									disparosMangueras += 10;
+									fireFreightBoat(paDonde, false);					
+									paDonde -= 0.2;
 								}
 									
-								bulletTime = instance.time.now + 400;					
+								bulletTime = instance.time.now + 400;						
 							}
 						}
 					}
+
+					instance.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
+				    instance.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
+				    instance.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
+				    instance.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
+				    instance.physics.arcade.collide(costas, speedBoats);
+				    instance.physics.arcade.collide(costas, freightBoat);
+				    instance.physics.arcade.collide(costas, bulletsSpeedBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(speedBoats, speedBoats);
 				}
 			},
 
@@ -782,18 +797,25 @@
 				    	} else {
 				    		//solo para barco carguero					
 							if (game.time.now > bulletTime) {						
-								var paDonde = -1.5;
+								var paDonde = -1.9, 
+									derecha = true;
 								
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(paDonde);						
-									paDonde += 2;
+									if(freightBoat.hoses[i]) {
+										fireFreightBoat(paDonde, derecha);
+									}
+									paDonde += 0.2;
 								}
 								
-								paDonde = 1.5;
-								
+								paDonde = 1.9;
+								derecha = false;
+
 								for (var i = 0; i < 4; i++) {
-									fireFreightBoat(paDonde);						
-									paDonde += 2;
+									if(freightBoat.hoses[i + 4]) {
+										fireFreightBoat(paDonde, derecha);	
+									}
+
+									paDonde -= 0.2;
 								}
 									
 								bulletTime = game.time.now + 400;						
@@ -810,12 +832,32 @@
 							currentlyControlled.body.velocity.y = 0;
 							currentlyControlled.body.angularVelocity = 0;
 
-					    	changeCharacter(game, {
-					    		id: currentlyControlled.id,
-					    		index: speedBoats.children.length - 1 > currentlyControlled.index ?
-					    				currentlyControlled.index + 1 :
-					    				0 
-					    	});
+							if(speedBoats.children[currentlyControlled.index + 1] &&
+								speedBoats.children[currentlyControlled.index + 1].alive) {
+								changeCharacter(game, {
+						    		id: currentlyControlled.id,
+						    		index: currentlyControlled.index + 1
+						    	});
+							} else if(currentlyControlled.index + 1 == speedBoats.children.length &&
+								speedBoats.children[0].alive) {
+								changeCharacter(game, {
+						    		id: currentlyControlled.id,
+						    		index: 0
+						    	});
+							} else if(currentlyControlled.index + 1 == speedBoats.children.length &&
+								speedBoats.children[1].alive) {
+								changeCharacter(game, {
+						    		id: currentlyControlled.id,
+						    		index: 1
+						    	});
+							}
+
+					    	// changeCharacter(game, {
+					    	// 	id: currentlyControlled.id,
+					    	// 	index: speedBoats.children.length - 1 > currentlyControlled.index ?
+					    	// 			currentlyControlled.index + 1 :
+					    	// 			0 
+					    	// });
 
 					    	tabTime = game.time.now + 300;
 							somethingHappened = true;
