@@ -397,7 +397,7 @@
 				}
 			},
 
-			collisionHandler = function(fb, sb) {
+			/*collisionHandler = function(fb, sb) {
 				if(Collisions.isBoarding(fb, sb)) {
 					if(Collisions.aboardAllowed(fb, sb)) {
 						endMatch = true;
@@ -420,7 +420,35 @@
 						} else {
 							instance.camera.follow(freightBoat);
 						}
-					}*/
+					}
+				}
+
+				updateScore(instance);
+			},*/
+
+
+			collisionHandler = function(fb, sb) {
+				if(Collisions.aboardAllowed(fb, sb, instance)) {
+					endMatch = true;
+					winner = 'speedboat';
+				} else {
+					console.log('Mata la lancha: ', sb.index);
+					sb.kill();
+					sb.health = 0;
+					sb.alive = false;
+
+					if(currentlyControlled && 
+						currentlyControlled.id == 'speedboat' &&
+						currentlyControlled.index == sb.index) {
+						currentlyControlled = speedBoats.getFirstAlive();
+
+						if(currentlyControlled) {
+							setAlpha(currentlyControlled.index);
+							instance.camera.follow(currentlyControlled);
+						} else {
+							instance.camera.follow(freightBoat);
+						}
+					}
 				}
 
 				updateScore(instance);
@@ -626,9 +654,20 @@
 								bulletTime = instance.time.now + 400;						
 							}
 				    	}
-						somethingHapenned = true;
-						shoot = true;
 					}
+
+					instance.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
+				    instance.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
+				    instance.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
+				    instance.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
+
+				    instance.physics.arcade.collide(costas, speedBoats);
+				    instance.physics.arcade.collide(costas, freightBoat);
+				    instance.physics.arcade.collide(costas, bulletsSpeedBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
+				    instance.physics.arcade.collide(speedBoats, speedBoats);
 				}
 			},
 
@@ -696,19 +735,6 @@
 				somethingHapenned = false;
 				shoot = false;
 				change = false;
-
-			    game.physics.arcade.overlap(freightBoats, speedBoats, collisionHandler, null, this);
-			    game.physics.arcade.overlap(bulletsFreightBoat, speedBoats, fireHandler, null, this);
-			    game.physics.arcade.overlap(bulletsSpeedBoat, freightBoats, fireHandler, null, this);
-			    game.physics.arcade.overlap(muelleLlegada, freightBoats, handleArrival, null, this);
-
-			    game.physics.arcade.collide(costas, speedBoats);
-			    game.physics.arcade.collide(costas, freightBoat);
-			    game.physics.arcade.collide(costas, bulletsSpeedBoat, killBullet, null, this);
-			    game.physics.arcade.collide(costas, bulletsFreightBoat, killBullet, null, this);
-			    game.physics.arcade.collide(island, bulletsSpeedBoat, killBullet, null, this);
-			    game.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
-			    game.physics.arcade.collide(speedBoats, speedBoats);
 
 			    if(!endMatch && currentlyControlled && currentlyControlled.alive) {
 				    if(currentlyControlled.id == 'freightboat') {

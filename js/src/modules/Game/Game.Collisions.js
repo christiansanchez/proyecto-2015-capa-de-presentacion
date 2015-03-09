@@ -7,7 +7,7 @@
 					minus: 90
 				},
 
-			aboardAlowedConditions = {
+			/*aboardAlowedConditions = {
 				left: [
 					[0, 1],
 					[1, 2],
@@ -18,9 +18,18 @@
 					[5, 6],
 					[6, 7]
 				]
-			},
+			},*/
 
-			freeOfHoses = function(freightBoat, combinations) {
+			aboardAlowedConditions = [
+				[0, 1],
+				[1, 2],
+				[2, 3],
+				[4, 5],
+				[5, 6],
+				[6, 7]
+			],
+
+			/*freeOfHoses = function(freightBoat, combinations) {
 				var free 	= false,
 					i 		= 0;
 
@@ -31,15 +40,28 @@
 				} while(!free && i < combinations.length);
 
 				return free;
+			};*/
+
+			freeOfHoses = function(freightBoat) {
+				var free 	= false,
+					i 		= 0;
+
+				do {
+					free = !freightBoat.hoses[aboardAlowedConditions[i][0]] &&
+							!freightBoat.hoses[aboardAlowedConditions[i][1]];
+					i++;
+				} while(!free && i < aboardAlowedConditions.length);
+
+				return free;
 			};
 
 		return {
-			isBoarding: function(freightBoat, speedBoat) {
+			/*isBoarding: function(freightBoat, speedBoat) {
 				return Math.abs(freightBoat.angle - boardingPossibilities.minus) <= Math.abs(speedBoat.angle) && 
 						Math.abs(freightBoat.angle + boardingPossibilities.plus) >= Math.abs(speedBoat.angle);
-			},
+			},*/
 
-			aboardAllowed: function(freightBoat, speedBoat) {
+			/*aboardAllowed: function(freightBoat, speedBoat) {
 				var pointingDown 	= freightBoat.angle > 0 && freightBoat.angle <= 180,
 					aboardAllowed 	= false;
 
@@ -56,6 +78,23 @@
 						aboardAllowed = freeOfHoses(freightBoat, aboardAlowedConditions.right);
 					}
 				}
+
+				return aboardAllowed;
+			}*/
+
+			aboardAllowed: function(freightBoat, speedBoat, game) {
+				var pointingDown 	= freightBoat.angle > 0 && freightBoat.angle <= 180,
+					pointingUp 		= freightBoat.angle < 0 && freightBoat.angle >= -180,
+					aboardAllowed 	= false;
+
+				if((pointingDown && game.physics.arcade.distanceBetween(freightBoat, speedBoat) < 60) || 
+					(pointingUp && game.physics.arcade.distanceBetween(freightBoat, speedBoat) < 60)) {
+					// nothing
+				} else if(game.physics.arcade.distanceBetween(freightBoat, speedBoat) <= (freightBoat.height + speedBoat.width / 2) && freeOfHoses(freightBoat)) {
+					aboardAllowed = true;
+				}
+
+
 
 				return aboardAllowed;
 			}
