@@ -465,6 +465,29 @@
 				sb.body.velocity.y = 0;
 				sb.body.angularVelocity = 0;
 
+				if(Collisions.freeOfHoses(freightBoat)) {
+					endMatch = true;
+					winner = true;
+				} else {
+					sb.kill();
+					sb.health = 0;
+					sb.alive = false;
+
+					if(currentlyControlled && 
+						currentlyControlled.id == 'speedboat' &&
+						currentlyControlled.index == sb.index) {
+						currentlyControlled = speedBoats.getFirstAlive();
+
+						if(currentlyControlled) {
+							setAlpha(currentlyControlled.index);
+							instance.camera.follow(currentlyControlled);
+						} else {
+							instance.camera.follow(freightBoat);
+						}
+					}
+				}
+
+				updateScore(instance);
 				somethingHapenned = true;
 			},
 
@@ -481,6 +504,10 @@
 			fireHandler = function(bullet, boat) {
 				bullet.kill();
 				computeDamage(boat);
+
+				boat.body.velocity.x = 0;
+				boat.body.velocity.y = 0;
+				boat.body.angularVelocity = 0;
 
 				if(boat.health == 0 && 
 					boat.id == 'speedboat') {
