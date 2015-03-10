@@ -15,6 +15,7 @@
 			scoreFreightBoat,
 			scoreSpeedBoat,
 			scorePositionSet = false,
+			somethingHapenned = false,
 			
 			endMatch = false,
 			winner,
@@ -256,6 +257,7 @@
 
 				game.physics.arcade.enable(freightBoat);
 
+				freightBoat.enableBody = true;
 				freightBoat.body.bounce.y = 0;
 			    freightBoat.body.gravity.y = 0;
 			    freightBoat.body.collideWorldBounds = true;
@@ -293,6 +295,7 @@
 
 						game.physics.arcade.enable(speedBoat);
 
+						speedBoat.enableBody = true;
 						speedBoat.body.bounce.y = 0;
 					    speedBoat.body.gravity.y = 0;
 					    speedBoat.body.collideWorldBounds = true;
@@ -427,7 +430,7 @@
 			},*/
 
 
-			collisionHandler = function(fb, sb) {
+			/*collisionHandler = function(fb, sb) {
 				if(Collisions.aboardAllowed(fb, sb, instance)) {
 					endMatch = true;
 					winner = 'speedboat';
@@ -452,6 +455,17 @@
 				}
 
 				updateScore(instance);
+			},*/
+
+			collisionHandler = function(fb, sb) {
+				fb.body.velocity.x = 0;
+				fb.body.velocity.y = 0;
+				fb.body.angularVelocity = 0;
+				sb.body.velocity.x = 0;
+				sb.body.velocity.y = 0;
+				sb.body.angularVelocity = 0;
+
+				somethingHapenned = true;
 			},
 
 			computeDamage = function(boat) {
