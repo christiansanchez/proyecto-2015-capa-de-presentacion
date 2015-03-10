@@ -83,7 +83,7 @@
 			}*/
 
 			aboardAllowed: function(freightBoat, speedBoat, game) {
-				return 
+				return;
 			},
 
 			freeOfHoses: function(freightBoat) {
