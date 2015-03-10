@@ -371,7 +371,9 @@
 				var score = '\nLanchas: \n';
 
 				for(var i = 0, speedBoat; speedBoat = speedBoats.children[i]; i++) {
-					score += 'Lancha ' + (i + 1) + ': ' + speedBoat.health + '\n';
+					var number = speedBoat.alive ? speedBoat.health : 0;
+
+					score += 'Lancha ' + (i + 1) + ': ' + number + '\n';
 				}
 
 				return score;
@@ -710,6 +712,16 @@
 				    instance.physics.arcade.collide(island, bulletsFreightBoat, killBullet, null, this);
 				    instance.physics.arcade.collide(speedBoats, speedBoats);
 				}
+
+				var alives = JSON.parse(data.alives);
+
+				for(var i = 0; i < alives.length; i++) {
+					if(!alives[i]) {
+						speedBoats.children[i].kill();
+					}
+				}
+
+				updateScore();
 			},
 
 			handleArrival = function(muelle, freightBoat) {
@@ -958,7 +970,8 @@
 						    		change: change,
 						    		endMatch: endMatch,
 						    		winner: winner,
-						    		hoses: JSON.stringify(freightBoat.hoses)
+						    		hoses: JSON.stringify(freightBoat.hoses),
+						    		alives: JSON.stringify(_.pluck(speedBoats.children, 'alive'))
 						    	})
 					    	)
 				    	);
