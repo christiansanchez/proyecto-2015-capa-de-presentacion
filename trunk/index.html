@@ -10,43 +10,43 @@
 	</head>
 	<body>
 		<div class="container" style="max-width: 1000px;">
-				<div class="header">
-					<nav>
-						<ul class="nav nav-pills pull-right">
-							<li class="game-actions hidden">
-								<button type="button" class="btn btn-primary navbar-btn" data-action="save">Guardar partida</button>
-							</li>
-							<li class="game-actions hidden">
-								<button type="button" class="btn btn-primary navbar-btn" data-action="showabandon">Abandonar partida</button>
-							</li>
-							<li>
-								<button type="button" class="btn btn-primary hidden" data-action="restart">Reiniciar juego</button>
-							</li>
-							<li role="presentation"><a href="javascript:;">Ayuda</a></li>
-						</ul>
-					</nav>
-					<h3 class="text-muted">GameSquad</h3>
+			<div class="header">
+				<nav>
+					<ul class="nav nav-pills pull-right">
+						<li class="game-actions hidden">
+							<button type="button" class="btn btn-primary navbar-btn" data-action="save">Guardar partida</button>
+						</li>
+						<li class="game-actions hidden">
+							<button type="button" class="btn btn-primary navbar-btn" data-action="showabandon">Abandonar partida</button>
+						</li>
+						<li>
+							<button type="button" class="btn btn-primary hidden" data-action="restart">Reiniciar juego</button>
+						</li>
+						<li role="presentation"><a href="javascript:;" data-action="show-help">Ayuda</a></li>
+					</ul>
+				</nav>
+				<h3 class="text-muted">GameSquad</h3>
+			</div>
+			
+			<div id="menu-container">
+				<div class="jumbotron">
+					<!-- h1>Menú Principal</h1 -->
+					<h1><img src="assets/title2.png" alt="Chasing the Cargo Ship :: GameSquad" title="Chasing the Cargo Ship :: GameSquad"></h1>
 				</div>
-				
-				<div id="menu-container">
-					<div class="jumbotron">
-						<!-- h1>Menú Principal</h1 -->
-						<h1><img src="assets/title2.png" alt="Chasing the Cargo Ship :: GameSquad" title="Chasing the Cargo Ship :: GameSquad"></h1>
-					</div>
 
-					<div class="row marketing">
-						<div class="col-lg-12 step step-1">
-							<div id="actions" class="btn-group-vertical col-lg-12" role="group">
-								<ul class="list-unstyled padded text-center">
-									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="create">Nueva partida</button></li>
-									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-method="getUnirsePartida">Unirse a una partida en curso</button></li>
-									<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-method="getCargarPartida">Cargar partida</button></li>
-								</ul>
-							</div>
+				<div class="row marketing">
+					<div class="col-lg-12 step step-1">
+						<div id="actions" class="btn-group-vertical col-lg-12" role="group">
+							<ul class="list-unstyled padded text-center">
+								<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="create">Nueva partida</button></li>
+								<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="join" data-method="getUnirsePartida">Unirse a una partida en curso</button></li>
+								<li><button type="button" class="btn-lg btn-primary" data-action="showstep" data-target="load" data-method="getCargarPartida">Cargar partida</button></li>
+							</ul>
 						</div>
 					</div>
 				</div>
-			
+			</div>
+		
 			<div id="game-wrapper" class="hidden">
 				<div id="game-container"></div>
 				<!-- span class="glyphicon glyphicon-volume-off" data-volume="off"></span>
@@ -180,6 +180,71 @@
 		<script id="error-tpl" type="underscore/template">
 			<div class="error">
 				<%= message %>
+			</div>
+		</script>
+		<script id="help-tpl" type="underscore/template">
+			<div class="col-lg-12 container-fluid" style="height: 500px;">
+				<h2>Ayuda en línea</h2>
+				<h4>Menú de opciones principales</h4>
+				<ul class="list-unstyled">
+					<li><b>Nueva partida</b>: Permite crear una nueva partida.</li>
+					<li><b>Unirse a una partida en curso</b>: Permite unirse a una partida ya creada.</li>
+					<li><b>Cargar partida</b>: Permite cargar una partida previamente cargada.</li>
+				</ul>
+				<h4>Opciones disponibles para una partida en curso</h4>
+				<ul class="list-unstyled">
+					<li><b>Guardar partida</b>: Permite guardar todos los datos de la partida.</li>
+					<li><b>Abandonar partida</b>: Se abandona la partida y se da por ganador al contrincante del jugador que abandonó.</li>
+				</ul>
+				<h4>Teclas de movimientos y disparo</h4>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<span class="glyphicon glyphicon-arrow-left"></span>
+					</div>
+					<div class="col-lg-6">
+						Virar hacia la izquierda
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<span class="glyphicon glyphicon-arrow-up"></span>
+					</div>
+					<div class="col-lg-6">
+						Mover hacia adelante
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+					</div>
+					<div class="col-lg-6">
+						Virar hacia la derecha
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<span class="glyphicon glyphicon-arrow-down"></span>
+					</div>
+					<div class="col-lg-6">
+						Mover hacia atrás (sólo para Carguero)
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<img src="assets/spacebar.png"/>
+					</div>
+					<div class="col-lg-6">
+						Disparar
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="col-lg-6">
+						<img src="assets/tabbutton.png"/>
+					</div>
+					<div class="col-lg-6">
+						Cambiar de lancha (sólo para Pirata)
+					</div>
+				</div>
 			</div>
 		</script>
 	</div>
