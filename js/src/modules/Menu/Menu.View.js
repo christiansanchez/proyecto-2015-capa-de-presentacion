@@ -231,6 +231,10 @@
 
 				restart = function() {
 					document.location.reload();
+				},
+
+				showHelp = function() {
+					$.modal($('#help-tpl').html())
 				};
 
 			return {
@@ -245,6 +249,7 @@
 					body.on('submit', '[data-action="confirm-abandon"]', abandon);
 					body.on('click', '[data-action="save"]', save);
 					body.on('click', '[data-action="restart"]', restart);
+					body.on('click', '[data-action="show-help"]', showHelp);
 					
 					body.on('click', '[data-action="back"]', back);
 					body.on('click', '[data-volume="off"]', handleVolume);
