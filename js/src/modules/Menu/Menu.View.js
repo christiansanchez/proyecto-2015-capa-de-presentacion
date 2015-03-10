@@ -234,7 +234,9 @@
 				},
 
 				showHelp = function() {
-					$.modal($('#help-tpl').html())
+					$.modal($('#help-tpl').html(), {
+						overlayClose: true
+					});
 				};
 
 			return {
